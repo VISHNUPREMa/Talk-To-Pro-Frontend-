@@ -1,0 +1,42 @@
+.userhome-div {
+    /* width: 1500px; */
+    min-width: 100vw;
+    background-color: aliceblue;
+    position: relative;
+    overflow-y: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.userhome-div::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, and Opera */
+}
+
+.navbar-fixed {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.content {
+    width: 100%;
+    
+    margin-top: 60px; /* Adjust based on your navbar height */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Add spacing between components */
+    padding: 20px; /* Optional: Add padding to the content area */
+}
+
+.footer-fixed {
+    position: relative;
+    width: 100%;
+    padding: 20px 0; /* Add padding to the footer */
+}

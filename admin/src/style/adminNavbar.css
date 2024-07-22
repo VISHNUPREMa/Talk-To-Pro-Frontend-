@@ -1,0 +1,17 @@
+.admin-navbar {
+    background-color: white;
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    min-width: 83vw;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-logo {
+    height: 2rem;
+    width: auto;
+    margin-left: auto;
+  }
+  
