@@ -2,21 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { format, addDays, subDays } from 'date-fns';
 import '../../../style/slotbooking.css';
 import axiosInstance from '../../../instance/axiosInstance';
-import { BACKEND_SERVER } from '../../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../../secrets/secret.js';
 import { useData } from '../../contexts/userDataContext';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import Navbar from '../usercomponents/navbar'
 
 const ServiceProviderBooking = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [availableSlots, setAvailableSlots] = useState([]);
   const [fetchedSlots, setFetchedSlots] = useState([]);
   const [cashAmount, setCashAmount] = useState(0);
-
+  const [bookedSlots , setBookedSlots] = useState([])
   const { user } = useData();
   const MySwal = withReactContent(Swal);
 
   useEffect(() => {
+   
     const fetchAvailableSlots = async () => {
       try {
         const proId = user.userid;
@@ -24,6 +26,7 @@ const ServiceProviderBooking = () => {
         if (response.data.success) {
           console.log("response : ", response.data.data);
           setFetchedSlots(response.data.data);
+          
         }
       } catch (error) {
         console.error('Error fetching available slots:', error);
@@ -35,7 +38,10 @@ const ServiceProviderBooking = () => {
 
   useEffect(() => {
     if (fetchedSlots.length > 0) {
+      console.log(fetchedSlots);
       updateAvailableSlots(fetchedSlots, selectedDate);
+      updateBookedSlots(fetchedSlots, selectedDate)
+     
     }
   }, [selectedDate, fetchedSlots]);
 
@@ -44,6 +50,13 @@ const ServiceProviderBooking = () => {
     const slotsForDate = slots.find(slot => slot.date.startsWith(dateString));
     setAvailableSlots(slotsForDate ? slotsForDate.slots.map(s => s.time) : []);
   };
+
+  const updateBookedSlots = (slots, date) => {
+    const dateString = date.toISOString().split('T')[0];
+    const slotsForDate = slots.find(slot => slot.date.startsWith(dateString));
+    setBookedSlots(slotsForDate ? slotsForDate.slots.filter(s => s.status === 'Booked').map(s => s.time) : []);
+  };
+  
 
   const dates = Array.from({ length: 7 }, (_, i) => addDays(selectedDate, i));
 
@@ -148,7 +161,7 @@ const ServiceProviderBooking = () => {
             confirmButton: 'swal2-confirm',
           }
         });
-  
+      
         // Update the fetchedSlots state to include the new slots
         setFetchedSlots((prevSlots) => {
           const dateString = selectedDate.toISOString().split('T')[0];
@@ -159,7 +172,20 @@ const ServiceProviderBooking = () => {
           );
           return updatedSlots;
         });
+      } else {
+        MySwal.fire({
+          title: 'Error!',
+          text: 'There was an issue saving the available slots and amounts. Please try again.',
+          icon: 'error',
+          customClass: {
+            popup: 'swal2-popup',
+            title: 'swal2-title',
+            content: 'swal2-content',
+            confirmButton: 'swal2-confirm',
+          }
+        });
       }
+      
     } catch (error) {
       console.error('Error saving available slots:', error);
       MySwal.fire({
@@ -179,6 +205,10 @@ const ServiceProviderBooking = () => {
 
 
   return (
+    <div style={{width:'100vw'}}>
+  <div className="navbar-fixed">
+        <Navbar />
+      </div>
     <div className="max-w-2xl mx-auto p-6">
       <div className="bg-white shadow-lg rounded-lg p-6">
         <h2 className="text-2xl font-bold mb-4">Allocate Your Available Slots</h2>
@@ -219,16 +249,33 @@ const ServiceProviderBooking = () => {
         </div>
   
         <div className="grid grid-cols-4 gap-4 mb-8" style={{ marginTop: '40px' }}>
-          {timeSlots.map((slot, index) => (
-            <button
-              key={index}
-              className={`p-3 rounded ${availableSlots.includes(slot) ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
-              onClick={() => handleTimeSlotToggleWithConfirmation(slot)}
-            >
-              {slot}
-            </button>
-          ))}
-        </div>
+  {timeSlots.map((slot, index) => {
+    const isAvailable = availableSlots.includes(slot);
+    const isBooked = availableSlots.includes(slot) && bookedSlots.includes(slot);
+
+    let buttonClass = 'p-3 rounded ';
+    if (isBooked) {
+      buttonClass += 'bg-red-500 text-white';
+    } else if (isAvailable) {
+      buttonClass += 'bg-green-500 text-white';
+    } else {
+      buttonClass += 'bg-gray-200';
+    }
+
+    return (
+      <button
+        key={index}
+        className={buttonClass}
+        onClick={!isBooked ? () => handleTimeSlotToggleWithConfirmation(slot) : null}
+    
+      >
+        {slot}
+      </button>
+    );
+  })}
+</div>
+
+
   
         <div className="flex justify-between items-center mt-4">
           <div id="legend" className="flex flex-col">
@@ -247,6 +294,7 @@ const ServiceProviderBooking = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
   

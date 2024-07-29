@@ -3,7 +3,7 @@ import { X, Home, DollarSign, Bell, CreditCard, Heart, Settings, LogOut, ArrowRi
 import '../../../style/sidemenu.css';
 import { useData } from '../../contexts/userDataContext';
 
-import {BACKEND_SERVER} from '../../../secrets/secret.JS'
+import {BACKEND_SERVER} from '../../../secrets/secret.js'
 import { useNavigate } from 'react-router-dom';
 
 const SideMenu = ({ isOpen, toggleSideMenu }) => {
@@ -39,7 +39,10 @@ const SideMenu = ({ isOpen, toggleSideMenu }) => {
               navigate('/booking')
             }else if (content === 'Your Transactions'){
               navigate('/transaction')
+            }else if(content === 'Notifications'){
+               alert("Notification")
             }
+
         } catch (error) {
         console.log(error);
     }

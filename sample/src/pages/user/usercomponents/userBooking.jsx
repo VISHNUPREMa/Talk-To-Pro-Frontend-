@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../../instance/axiosInstance';
 import '../../../style/userbooking.css';
 import { useData } from '../../contexts/userDataContext';
-import { BACKEND_SERVER } from '../../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../../secrets/secret.js';
+import Navbar from './navbar';
 
 const UserBooking = () => {
   const { user } = useData();
@@ -27,6 +28,11 @@ const UserBooking = () => {
 
   
   return (
+    <div style={{width:'100vw'}}>
+    <div className="navbar-fixed">
+        <Navbar />
+      </div>
+  
     <div className="user-booking">
       <h1>Your Bookings</h1>
       <div className="table-responsive">
@@ -65,7 +71,7 @@ const UserBooking = () => {
 </span>
 
         </td>
-        <td>{book.amount}</td>
+        <td>{book.slots.amount}</td>
       </tr>
     );
   })}
@@ -73,6 +79,7 @@ const UserBooking = () => {
 
         </table>
       </div>
+    </div>
     </div>
   );
 };

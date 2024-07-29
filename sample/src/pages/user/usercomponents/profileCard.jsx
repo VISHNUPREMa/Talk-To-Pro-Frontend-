@@ -4,6 +4,8 @@ import '../../../style/profilCard.css'
 import { BACKEND_SERVER } from '../../../../../admin/src/secret/secret';
 import ProfileContext from '../context/profileContext';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../usercomponents/navbar';
+
 
 
 export function ProfileCard() {
@@ -38,6 +40,11 @@ export function ProfileCard() {
   }
 
   return (
+  <div style={{width:'100vw'}}>
+ 
+ <div className="navbar-fixed">
+        <Navbar />
+      </div>
     <div className="profile-card mx-auto max-w-7xl px-2 py-10 lg:px-0">
       <div className="overflow-hidden">
         <div className="mb-9 pt-4 md:px-6 md:pt-7 lg:mb-2 lg:p-8 2xl:p-10 2xl:pt-10">
@@ -120,6 +127,7 @@ export function ProfileCard() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

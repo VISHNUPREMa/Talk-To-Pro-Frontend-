@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Clock, Youtube } from 'lucide-react';
 import '../../style/console.css';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../user/usercomponents/navbar';
 
 const Console = () => {
   const navigate = useNavigate()
@@ -18,6 +19,11 @@ const Console = () => {
   };
 
   return (
+    <div style={{width:'100vw'}}>
+    
+  <div className="navbar-fixed">
+        <Navbar />
+      </div>
     <div className="dashboard">
       <aside className="sidebar">
         <ul className="menu-list">
@@ -57,6 +63,7 @@ const Console = () => {
         {selectedMenuItem === 'ANALYTICS' && <div>Analytics Section</div>}
         {selectedMenuItem === 'REVIEWS' && <div>Reviews Section</div>}
       </main>
+    </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 // src/components/CardOne.js
 import React, { useContext, useEffect } from 'react';
-import { BACKEND_SERVER } from '../../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../../secrets/secret.js';
 import { useNavigate } from 'react-router-dom';
 import ProfileContext from '../context/profileContext';
 

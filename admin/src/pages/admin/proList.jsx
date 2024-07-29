@@ -18,7 +18,7 @@ const ProList = () => {
     try {
       const response = await axios.get(`${BACKEND_SERVER}/allpro`);
       console.log("response : ", response);
-      setProData(response.data); 
+      setProData(response.data.data); 
     } catch (error) {
       console.error('Error fetching user data:', error);
     }

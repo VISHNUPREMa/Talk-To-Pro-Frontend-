@@ -7,6 +7,8 @@ import SearchContext from '../context/searchContext';
 import SideMenu from './sideMenu';
 import { AuthContext } from './jwtAuthContext';
 import { useData } from '../../contexts/userDataContext';
+import { IoNotifications } from "react-icons/io5";
+import UserNotification from '../navbar-components/userNotification';
 
 const Navbar = () => {
   const { setUser: setGlobalUser } = useData();
@@ -15,6 +17,7 @@ const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [showNotification, setShowNotification] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('refreshToken');
@@ -48,10 +51,30 @@ const Navbar = () => {
     setIsSideMenuOpen(!isSideMenuOpen);
   };
 
+
+  const goToHome = async(e) =>{
+    e.preventDefault()
+    try {
+      navigate('/')
+    } catch (error) {
+      
+    }
+  }
+
+
+  const handleNotification = async(e) => {
+    e.preventDefault();
+    try {
+      showNotification ? setShowNotification(false) : setShowNotification(true)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="navbar">
       <div className="container">
-        <div className="left">
+        <div className="left" onClick={goToHome} style={{cursor:'pointer'}}>
           <span className="title">Talk to Pro</span>
         </div>
         <div className="right">
@@ -62,6 +85,8 @@ const Navbar = () => {
             value={searchTerm}
             onChange={handleSearchChange}
           />
+          {showNotification&&<UserNotification/>}
+         <IoNotifications style={{ fontSize: '24px', marginLeft: '50px' }} onClick={handleNotification} />
           <div className="profile-icon">
             <img src="../../../../profile.png" alt="Profile" className="profile-pic" />
           </div>

@@ -4,3 +4,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.table-responsive .table-header, 
+.table-responsive .table-cell {
+  font-size: 1.25rem !important; /* Use !important if other styles are overriding */
+}

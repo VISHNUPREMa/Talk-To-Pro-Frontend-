@@ -12,11 +12,13 @@
     "watch:css": "postcss src/index.css -o src/tailwind-output.css --watch"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.6.0",
     "@google-pay/button-react": "^3.1.0",
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "date-fns": "^3.6.0",
+    "firebase": "^10.12.4",
     "flowbite-react": "^0.10.1",
     "formik": "^2.4.6",
     "lucide-react": "^0.407.0",
@@ -25,9 +27,12 @@
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
     "react-multi-carousel": "^2.8.5",
+    "react-notifications": "^1.7.4",
     "react-paypal-button-v2": "^2.6.3",
     "react-router-dom": "^6.24.0",
     "react-toastify": "^10.0.5",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "sweetalert2": "^11.12.2",
     "sweetalert2-react-content": "^5.0.7",
     "yup": "^1.4.0"

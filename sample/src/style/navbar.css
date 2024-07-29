@@ -1,8 +1,12 @@
 /* Navbar styles */
+/* src/pages/user/usercomponents/Navbar.module.css */
 .navbar {
-    width: 100%;
-    background-color: white;
-  }
+  width: 100%;
+  background-color: white;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adjust values for desired effect */
+}
+
   
   .container {
     display: flex;

@@ -3,7 +3,7 @@ import '../../style/verifyOtpEmail.css';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { useEmail } from '../contexts/userEmailContext';
-import { BACKEND_SERVER } from '../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../secrets/secret.js';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../../instance/axiosInstance';
 
@@ -108,7 +108,7 @@ function OtpPage() {
 
   const handleResendOtp = async () => {
     try {
-      // Call API to resend OTP
+
       setExpired(false)
       const response = await axiosInstance.post(`${BACKEND_SERVER}/resend-otp`, { email });
       console.log("OTP resent successfully:", response.data);

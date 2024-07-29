@@ -6,14 +6,20 @@ export const useData = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
- 
-    const storedUser = sessionStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : {};
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser);
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        return {};
+      }
+    }
+    return {};
   });
 
   useEffect(() => {
-   
-    sessionStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
   }, [user]);
 
   return (
@@ -24,4 +30,3 @@ export const UserProvider = ({ children }) => {
 };
 
 export default UserContext;
-

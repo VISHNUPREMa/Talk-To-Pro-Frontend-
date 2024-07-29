@@ -3,7 +3,7 @@ import '../../style/newpassword.css';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { useEmail } from '../contexts/userEmailContext';
-import { BACKEND_SERVER } from '../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../secrets/secret.js';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import axiosInstance from '../../instance/axiosInstance';

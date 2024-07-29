@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PayPalButton } from 'react-paypal-button-v2';
 import axiosInstance from '../../../instance/axiosInstance';
-import { BACKEND_SERVER } from '../../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../../secrets/secret';
 import { useData } from '../../../pages/contexts/userDataContext';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -36,7 +36,7 @@ const PayPalIntegration = ({ amount, selectedDate, selectedTimeSlot, proId }) =>
   const handlePaymentSuccess = async (details, data) => {
     const userid = user.userid;
     try {
-      const response = await axiosInstance.patch(`${BACKEND_SERVER}/bookslot`, {
+      const response = await axiosInstance.post(`${BACKEND_SERVER}/bookslot`, {
         userid,
         amount,
         selectedDate,

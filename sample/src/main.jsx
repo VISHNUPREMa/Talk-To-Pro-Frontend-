@@ -9,7 +9,7 @@ import { SearchProvider } from './pages/user/context/searchContext.jsx';
 import {ProfileProvider} from './pages/user/context/profileContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  
     <GoogleOAuthProvider clientId='1034584448930-77e3thcvocj82v6nio2hd034ek2sgsmb.apps.googleusercontent.com'>
       <EmailProvider>
         <UserProvider>
@@ -23,5 +23,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </UserProvider>
       </EmailProvider>
     </GoogleOAuthProvider>
-  </React.StrictMode>,
+
 );

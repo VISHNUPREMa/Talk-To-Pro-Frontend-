@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../../style/signup.css';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../instance/axiosInstance';
-import { BACKEND_SERVER } from '../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../secrets/secret.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEmail } from '../contexts/userEmailContext';

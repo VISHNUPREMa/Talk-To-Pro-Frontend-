@@ -1,14 +1,17 @@
 import React, { useState ,  useContext  } from 'react';
-import axios from 'axios';
-import {BACKEND_SERVER} from '../../../secrets/secret.JS'
+
+import {BACKEND_SERVER} from '../../../secrets/secret.js'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axiosInstance from '../../../instance/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
   
-// import { useData } from '../../contexts/userDataContext';
+import { useData } from '../../contexts/userDataContext';
 
 export function UserBanner() {
-  // const { user } = useData(); 
+  const navigate = useNavigate()
+  const { user } = useData(); 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     profession: '',
@@ -16,7 +19,8 @@ export function UserBanner() {
     experience: '',
     languages: '',
     profilePic: null,
-    description: ''
+    description: '',
+   
   });
 
   const handleRegister = (e) => {
@@ -39,6 +43,7 @@ export function UserBanner() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+    
       const formDataToSend = new FormData();
   
       
@@ -46,10 +51,11 @@ export function UserBanner() {
         formDataToSend.append(key, formData[key]);
       }
   
-      let token = localStorage.getItem("token");
-      formDataToSend.append("token", token);
+      let token = localStorage.getItem("refreshToken");
+      console.log("token : ",token);
+      formDataToSend.append('token', token); 
   
-      const response = await axios.post(`${BACKEND_SERVER}/professional/register`, formDataToSend, {
+      const response = await axiosInstance.post(`${BACKEND_SERVER}/professional/register`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -66,13 +72,14 @@ export function UserBanner() {
           draggable: true,
         });
         closeModal(); 
+  
        
       }
       
   
       
     } catch (error) {
-      console.error("Error submitting form:", error.response.data);
+        console.log("error : ",error);
       toast.error(error.response?.data || 'An error occurred during signup.', {
         position: 'top-right',
         autoClose: 2000,
@@ -98,9 +105,9 @@ export function UserBanner() {
           if you are a professional of any field, you have the opportunity to earn money by renting your free time. Build your personal brand through that.
         </p>
         <hr className="border-t border-gray-700 my-4" />
-        <a onClick={handleRegister} className="btn btn-outline-light border border-white text-white py-2 px-4 rounded-md hover:bg-white hover:text-gray-900">
+       {user.isServiceProvider === false ? <a onClick={handleRegister} className="btn btn-outline-light border border-white text-white py-2 px-4 rounded-md hover:bg-white hover:text-gray-900">
           register now
-        </a>
+        </a>:null}
       </div>
 
       {showModal && (

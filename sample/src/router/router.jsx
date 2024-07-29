@@ -17,6 +17,10 @@ import PayPalIntegration from "../pages/user/usercomponents/paypalComponent";
 import { AuthProvider } from '../pages/user/usercomponents/jwtAuthContext';
 import UserBooking from "../pages/user/usercomponents/userBooking";
 import UserTransactions from "../pages/user/usercomponents/userTransactions";
+import VideoCall from "../videocall";
+import UserNotification from "../pages/user/navbar-components/userNotification";
+import NotificationDetails from "../pages/user/usercomponents/notification-details";
+
 
 
 function Routers(){
@@ -41,6 +45,10 @@ function Routers(){
           <Route path="/paypal" element={<Dashboard><PayPalIntegration/></Dashboard>} />
           <Route path="/booking" element={<Dashboard><UserBooking/></Dashboard>} />
           <Route path="/transaction" element={<Dashboard><UserTransactions/></Dashboard>} />
+           <Route path="/videocall" element={<VideoCall/>} /> 
+           <Route path="/singlenotification" element={<NotificationDetails/>} /> 
+          
+         
 
 
         

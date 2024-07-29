@@ -7,33 +7,37 @@ body, html {
 
 .user-booking {
   display: flex;
+  width: 90%;
   flex-direction: column;
   align-items: center;
   height: 100%;
-  background-color: #282c34;
+  background-color: #fff;
   padding: 20px;
   box-sizing: border-box;
+  margin-top: -300px;
+  justify-content: center;
 }
 
 .user-booking h1 {
   font-size: 4vw; /* Responsive font size */
   letter-spacing: -2px; /* Adjusted letter spacing */
-
   text-align: center; /* Center the text */
-  color: white;
+  color: #212529;
 }
 
 .table-responsive {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  margin-top: 50px;
   background-color: white;
   border-radius: 8px;
   overflow: hidden; /* To ensure rounded corners work */
 }
 
 .table {
-  width: 100%;
-  margin-bottom: 1rem;
+  width: 1100px; /* Fixed width to center the table */
+  margin: 1rem auto; /* Center the table */
   color: #212529;
   background-color: white;
   border-collapse: collapse;
@@ -45,6 +49,7 @@ body, html {
 
 .table thead {
   background-color: #f8f9fa;
+  color: #212529;
 }
 
 .table thead th {
@@ -52,8 +57,7 @@ body, html {
   padding: 1rem;
   text-align: left;
   font-size: 1rem;
-    background-color: #bea309;
-    
+  background-color: #bea309;
 }
 
 .table td {
@@ -150,8 +154,4 @@ body, html {
 .avatar-sm {
   width: 1.5rem;
   height: 1.5rem;
-}
-
-#table{
-  width: 1000px;
 }

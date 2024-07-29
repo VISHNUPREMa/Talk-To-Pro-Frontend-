@@ -4,7 +4,7 @@
     box-shadow: 0 5px 8px rgba(44, 43, 52, 0.2);
     padding: 1px;
     border-radius: 10px;
-    color: #282A36;
+    color: #2c2e39;
   }
   
   #date-div button.selected {
@@ -43,7 +43,7 @@
   }
   
   #legend .flex .bg-gray-200 {
-    background-color: #919499;
+    background-color: #4c4e52;
   }
   
   #legend .flex .bg-white {

@@ -1,6 +1,7 @@
 // BookingDetails.js
 import React from 'react';
 import '../../../style/bookingdetails.css'
+import Navbar from './navbar'
 
 const BookingDetails = ({ bookings, onClose }) => {
   const mockBookings = [
@@ -10,6 +11,11 @@ const BookingDetails = ({ bookings, onClose }) => {
   ];
 
   return (
+    <>
+
+        <Navbar />
+  
+   
     <div className="booking-details-popup">
       <button className="close-btn" onClick={onClose}>X</button>
       <h2>Your Bookings</h2>
@@ -23,6 +29,7 @@ const BookingDetails = ({ bookings, onClose }) => {
         ))}
       </ul>
     </div>
+    </>
   );
 };
 

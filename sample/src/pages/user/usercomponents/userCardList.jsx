@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { CardOne } from './serviceProviderCard';
-import { BACKEND_SERVER } from '../../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../../secrets/secret.js';
 import SearchContext from '../context/searchContext';
 
 export function CardList() {
@@ -14,7 +14,7 @@ export function CardList() {
         const response = await axios.get(`${BACKEND_SERVER}/cards`);
         if (response.data) {
           console.log(response.data);
-          setProfiles(response.data);
+           setProfiles(response.data.data); 
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);

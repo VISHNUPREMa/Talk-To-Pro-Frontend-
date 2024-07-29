@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import '../../App.css'; 
+
 import axios from 'axios';
 import { BACKEND_SERVER } from '../../secret/secret';
 import { ToastContainer, toast } from 'react-toastify';
@@ -18,7 +19,7 @@ const UserList = () => {
     try {
       const response = await axios.get(`${BACKEND_SERVER}/allusers`);
       console.log("response : ", response);
-      setUserData(response.data); // Assuming your API returns an array of users
+      setUserData(response.data.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -103,12 +104,12 @@ const UserList = () => {
           {userData.map((row, index) => (
             <tr key={index}>
               <td>
-                <img
-                  alt="..."
+                {row.profilePic && <img
+                  
                   src={`${BACKEND_SERVER}/public/${row.profilePic}`}
                   className="avatar avatar-sm rounded-circle me-2"
-                />
-                <a className="text-heading font-semibold" href="#">
+                />}
+                <a className="text-heading font-semibold">
                   {row.username}
                 </a>
               </td>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import '../../style/login.css';
-import { BACKEND_SERVER } from '../../secrets/secret.JS';
+import { BACKEND_SERVER } from '../../secrets/secret.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from './usercomponents/jwtAuthContext';
@@ -11,9 +11,8 @@ import { useData } from '../contexts/userDataContext';
 import { useLocation } from 'react-router-dom';
 import axiosInstance from '../../instance/axiosInstance';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-
-// Custom hook to manage email and password state
-function useEmail() {
+              
+function useEmail() {    
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   return { email, setEmail, password, setPassword };
@@ -26,7 +25,7 @@ function Login() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const { setToken } = useContext(AuthContext);
-  const { setUser: setGlobalUser } = useData();
+  const { setUser: setGlobalUser } = useData({});
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = (e) => {
@@ -84,11 +83,14 @@ function Login() {
   
           if (response.status === 200) {
             console.log("response :", response.data);
-              const { accessToken, refreshToken, userInfo } = response.data.data;
+              const { accessToken, refreshToken, userInfo } = response.data.data.data;
         console.log([accessToken, refreshToken, userInfo ]);
         document.cookie = `accessToken=${accessToken}; path=/`;
+        console.log("a");
         localStorage.setItem('refreshToken', refreshToken);
+        console.log("b");
         setGlobalUser(userInfo);
+        console.log("c");
         navigate('/');
           } else {
             toast.error('An error occurred during login.', {
@@ -110,22 +112,22 @@ function Login() {
             pauseOnHover: true,
             draggable: true,
           });
-        }
+        }   
       }
     };
   
     fetchUserInfo();
   }, [user, setToken, setGlobalUser, navigate, location]);
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e) => {      
     e.preventDefault();
     try {
       console.log('Email:', email);
       console.log('Password:', password);
       const response = await axiosInstance.post(`${BACKEND_SERVER}/login`, { email, password });
       if (response.status === 200) {
-        console.log("response : ",response.data);
-        const { accessToken, refreshToken, userInfo } = response.data.data;
+        console.log("response : ",response.data.data);
+        const { accessToken, refreshToken, userInfo } = response.data.data.data;
         console.log([accessToken, refreshToken, userInfo ]);
         document.cookie = `accessToken=${accessToken}; path=/`;
         console.log("a");
@@ -133,13 +135,9 @@ function Login() {
         console.log("b");
         setGlobalUser(userInfo);
         console.log("c");
-        navigate('/');
-        console.log("d");
-        // console.log(response.data.data);
-        // setToken(response.data.data.token);
-        // localStorage.setItem("token", response.data.data.token);
-        // setGlobalUser(response.data.data.userInfo);
-        // navigate("/");
+        navigate('/');       
+        console.log("d");     
+       
       }
     } catch (error) {
       console.log(error);
@@ -169,15 +167,15 @@ function Login() {
             placeholder="Email Address" 
             className="email" 
             onChange={(e) => setEmail(e.target.value)} 
-          />
+          />   
           <div className="password-container">
             <input 
               type={showPassword ? "text" : "password"} 
               placeholder="Password" 
               className="pass" 
               onChange={(e) => setPassword(e.target.value)} 
-            />
-            <span 
+            />         
+            <span    
               type="button" 
               className="password-toggle" 
               onClick={() => setShowPassword(!showPassword)}
