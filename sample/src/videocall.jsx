@@ -5,6 +5,9 @@ import { io } from "socket.io-client";
 import Swal from 'sweetalert2';
 import { useData } from "./pages/contexts/userDataContext";
 
+import { BACKEND_SERVER } from "./secrets/secret";
+import axiosInstance from "./instance/axiosInstance";
+
 const socket = io("http://localhost:3000", { transports: ["websocket"] });
 
 const configuration = {
@@ -15,58 +18,95 @@ const configuration = {
 };
 
 function App() {
+ 
+  const [sentId , setSentId] = useState("")
+
+
   const { user } = useData();
-  const userInfo = user?.userId || '123456'; // Assuming userInfo is userId or fallback to '123456'
-  const room = "exampleRoom"; // Replace with dynamic room or user ID
 
-  useEffect(() => {
-    socket.emit('join', room);
+  
 
-    socket.on("calling", (data) => {
-      if (!localStream.current) {
-        console.log("not ready yet");
-        return;
-      }
-      switch (data.type) {
-        case "offer":
-          handleOffer(data);
-          break;
-        case "answer":
-          handleAnswer(data);
-          break;
-        case "candidate":
-          handleCandidate(data);
-          break;
-        case "ready":
-          if (pc.current) {
-            alert("already in call ignoring");
-            return;
-          }
-          makeCall();
-          break;
-        case "bye":
-          if (pc.current) {
-            hangup();
-          }
-          break;
-        default:
-          console.log("unhandled", data);
-          break;
-      }
+const room = '123456';
+
+  
+useEffect(()=>{
+  
+  const userid = user.userid
+  console.log("user id : ",userid);
+socket.emit('on',{userid})
+},[])
+
+
+
+
+
+
+
+
+
+useEffect(() => {
+  socket.emit('join', room);
+
+  socket.on("calling", (data) => {
+    if (!localStream.current) {
+      console.log("not ready yet");
+      return;
+    }
+    switch (data.type) {
+      case "offer":
+        handleOffer(data);
+        break;
+      case "answer":
+        handleAnswer(data);
+        break;
+      case "candidate":
+        handleCandidate(data);
+        break;
+      case "ready":
+        if (pc.current) {
+          alert("already in call ignoring");
+          return;
+        }
+        makeCall();
+        break;
+      case "bye":
+        if (pc.current) {
+          hangup();
+        }
+        break;
+      default:
+        console.log("unhandled", data);
+        break;
+    }
+  });
+
+  socket.on('ignoredStatus', () => {
+    hangup();
+    Swal.fire({
+      title: 'Call ended',
     });
+  });
 
-    socket.on('ignoredStatus', () => {
+  return () => {
+    socket.off("calling");
+    socket.off("ignoredStatus");
+  };
+}, [room]);
+
+socket.on('cut-call', () => {
+  Swal.fire({
+    title: 'User cut the call',
+    showCancelButton: true,
+    confirmButtonText: 'Ok',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      console.log("User acknowledged the call was cut");
       hangup();
-      Swal.fire({
-        title: 'Call ended',
-      });
-    });
+    }
+  });
+});
 
-    return () => {
-      socket.off("calling");
-      socket.off("ignoredStatus");
-    };
-  }, []);
+
 
   const pc = useRef(null);
   const localStream = useRef(null);
@@ -79,6 +119,7 @@ function App() {
 
   async function makeCall() {
     try {
+   
       pc.current = new RTCPeerConnection(configuration);
       pc.current.onicecandidate = (e) => {
         const message = {
@@ -107,14 +148,17 @@ function App() {
     try {
       pc.current = new RTCPeerConnection(configuration);
       pc.current.onicecandidate = (e) => {
-        const message = {
-          type: "candidate",
-          candidate: e.candidate ? e.candidate.candidate : null,
-          sdpMid: e.candidate ? e.candidate.sdpMid : undefined,
-          sdpMLineIndex: e.candidate ? e.candidate.sdpMLineIndex : undefined,
-        };
-        socket.emit("calling", { room, data: message });
+        if (e.candidate) {
+          const message = {
+            type: "candidate",
+            candidate: e.candidate.candidate,
+            sdpMid: e.candidate.sdpMid,
+            sdpMLineIndex: e.candidate.sdpMLineIndex
+          };
+          socket.emit("calling", { room, data: message });
+        }
       };
+      
       pc.current.ontrack = (e) => (remoteVideo.current.srcObject = e.streams[0]);
       localStream.current.getTracks().forEach((track) => pc.current.addTrack(track, localStream.current));
       await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
@@ -127,6 +171,7 @@ function App() {
   }
 
   async function handleAnswer(answer) {
+
     if (!pc.current) {
       console.error("no peerconnection");
       return;
@@ -141,16 +186,29 @@ function App() {
   async function handleCandidate(candidate) {
     try {
       if (!pc.current) {
-        console.error("no peerconnection");
+        console.error("No peer connection");
         return;
       }
-      await pc.current.addIceCandidate(new RTCIceCandidate(candidate));
+  
+      const { candidate: iceCandidate, sdpMid, sdpMLineIndex } = candidate;
+  
+      if (iceCandidate && sdpMid !== null && sdpMLineIndex !== null) {
+        await pc.current.addIceCandidate(new RTCIceCandidate({
+          candidate: iceCandidate,
+          sdpMid: sdpMid,
+          sdpMLineIndex: sdpMLineIndex
+        }));
+      } else {
+        console.error("Incomplete ICE candidate received", candidate);
+      }
     } catch (e) {
-      console.log(e);
+      console.log("Error handling ICE candidate:", e);
     }
   }
+  
 
   async function hangup() {
+ 
     if (pc.current) {
       pc.current.close();
       pc.current = null;
@@ -174,24 +232,33 @@ function App() {
   const [audioState, setAudio] = useState(true);
   const [videoState, setVideoState] = useState(true);
 
-  const startB = async () => {
-    try {
+async function startB() {
+  alert("make a call 3");
+  try {
+    const id = user.userid;
+    const response = await axiosInstance.post(`${BACKEND_SERVER}/call`, { id });
+    if (response) {
+      console.log("response : ", response.data.data);
+      setSentId(response.data.data); 
       localStream.current = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: { echoCancellation: true },
       });
       localVideo.current.srcObject = localStream.current;
-    } catch (err) {
-      console.log(err);
+      socket.emit("call-request", { room, from: id, to: response.data.data });
     }
+  } catch (err) {
+    console.log(err);
+  }
 
-    startButton.current.disabled = true;
-    hangupButton.current.disabled = false;
-    muteAudButton.current.disabled = false;
-    muteVideoButton.current.disabled = false; // Use muteVideoButton here
+  startButton.current.disabled = true;
+  hangupButton.current.disabled = false;
+  muteAudButton.current.disabled = false;
+  muteVideoButton.current.disabled = false;
 
-    socket.emit("calling", { room, data: { type: "ready" } });
-  };
+  socket.emit("calling", { room, data: { type: "ready" } });
+}
+
 
   const hangB = async () => {
     Swal.fire({

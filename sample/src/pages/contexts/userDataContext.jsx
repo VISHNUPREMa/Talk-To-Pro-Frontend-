@@ -6,7 +6,7 @@ export const useData = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = sessionStorage.getItem('user');
     if (storedUser) {
       try {
         return JSON.parse(storedUser);
@@ -19,7 +19,7 @@ export const UserProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('user', JSON.stringify(user));
   }, [user]);
 
   return (

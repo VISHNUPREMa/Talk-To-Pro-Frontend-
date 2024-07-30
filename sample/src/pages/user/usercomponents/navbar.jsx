@@ -38,7 +38,7 @@ const Navbar = () => {
     localStorage.removeItem('refreshToken');
   
     setGlobalUser(null);
-    setIsAuthenticated(false);
+     setIsAuthenticated(false);
   
     navigate('/login');
   };

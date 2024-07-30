@@ -1,19 +1,39 @@
-// notification-hook.js
-import { useState, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
-const useNotification = () => {
-  const [notification, setNotification] = useState(() => {
+// Create NotificationContext
+const NotificationContext = createContext();
+
+// Custom hook to use the NotificationContext
+export const useNotification = () => useContext(NotificationContext);
+
+// NotificationProvider component
+export const NotificationProvider = ({ children }) => {
+  const [singleNotification, setSingleNotification] = useState(() => {
     const storedNotification = sessionStorage.getItem('notification');
-    return storedNotification ? JSON.parse(storedNotification) : null;
+    if (storedNotification) {
+      try {
+        return JSON.parse(storedNotification);
+      } catch (error) {
+        console.error('Error parsing stored notification:', error);
+        return {};
+      }
+    }
+    return {};
   });
 
   useEffect(() => {
-    if (notification) {
-      sessionStorage.setItem('notification', JSON.stringify(notification));
+    if (Object.keys(singleNotification).length > 0) {
+      sessionStorage.setItem('notification', JSON.stringify(singleNotification));
+    } else {
+      sessionStorage.removeItem('notification');
     }
-  }, [notification]);
+  }, [singleNotification]);
 
-  return [notification, setNotification];
+  return (
+    <NotificationContext.Provider value={{ singleNotification, setSingleNotification }}>
+      {children}
+    </NotificationContext.Provider>
+  );
 };
 
-export default useNotification;
+export default NotificationContext;

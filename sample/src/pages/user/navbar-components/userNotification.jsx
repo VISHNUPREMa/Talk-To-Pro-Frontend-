@@ -6,10 +6,10 @@ import { useData } from '../../contexts/userDataContext';
 import axiosInstance from '../../../instance/axiosInstance';
 import { BACKEND_SERVER } from '../../../secrets/secret';
 import { useNavigate } from 'react-router-dom';
-import UseNotification from '../customhooks/notification-hook'; // Adjust the import path as needed
+import { useNotification } from '../customhooks/notification-hook';
 
 const UserNotification = () => {
-  const [, setNotification] = UseNotification(); 
+ const {setSingleNotification} = useNotification({})
   const navigate = useNavigate();
   const { user } = useData();
   const [notificationsVisible, setNotificationsVisible] = useState(true);
@@ -41,7 +41,7 @@ const UserNotification = () => {
   }, [user]);
 
   const handleSelectedNotification = async (notification) => {
-    setNotification(notification);
+    setSingleNotification(notification);
     navigate('/singlenotification');
   };
 
