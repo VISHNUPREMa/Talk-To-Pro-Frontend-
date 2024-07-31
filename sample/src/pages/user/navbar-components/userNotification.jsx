@@ -69,11 +69,11 @@ const UserNotification = () => {
                       </div>
                       <div>
                         <a href="#" className="font-semibold text-gray-900">
-                          {notification.providedBy === user.username ? `Slot booked by ${notification.slots[0].bookedBy}` : `You booked a slot with ${notification.providedBy}`} <span className="text-xs text-gray-400 animate-pulse">{new Date(notification._id.date).toLocaleTimeString()}</span>
+                          {notification.providedBy === user.username ? `Slot booked by ${notification.bookedBy}` : `You booked a slot with ${notification.providedBy}`} <span className="text-xs text-gray-400 animate-pulse">{new Date(notification.date).toLocaleTimeString()}</span>
                           <span className="absolute inset-0"></span>
                         </a>
                         <p className="mt-1 text-gray-600">
-                          {notification.providedBy === user.username ? `${notification.slots[0].bookedBy} booked slot at ${notification.slots[0].time}` : `You booked slot at ${notification.slots[0].time} with ${notification.providedBy}`}
+                          {notification.providedBy === user.username ? `${notification.bookedBy} booked slot at ${notification.time}` : `You booked slot at ${notification.time} with ${notification.providedBy}`}
                         </p>
                       </div>
                     </div>

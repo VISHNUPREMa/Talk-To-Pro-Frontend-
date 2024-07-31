@@ -1,17 +1,48 @@
-import React , {useContext} from 'react';
+import React , {useContext ,useState , useEffect} from 'react';
 import { ChevronLeft, ChevronRight, Heart, Share, Linkedin } from 'lucide-react';
 import '../../../style/profilCard.css'
-import { BACKEND_SERVER } from '../../../../../admin/src/secret/secret';
 import ProfileContext from '../context/profileContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../usercomponents/navbar';
+import { useData } from '../../contexts/userDataContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axiosInstance from '../../../instance/axiosInstance';
+import { BACKEND_SERVER } from '../../../secrets/secret';
+import Swal from 'sweetalert2';
 
 
 
 export function ProfileCard() {
   const navigate = useNavigate()
+  const {user} = useData()
   const { proProfile } = useContext(ProfileContext);
   const data = proProfile;
+  const proId = data.userid;
+  const userId = user.userid;
+
+  const [showFollowButton , setShowFollowButton] = useState(false);
+  const [alreadyFollowed , setAlreadyFollowed] = useState(false)
+
+  useEffect(()=>{
+    const fetchBookedData = async()=>{
+      try {
+        
+        const response = await axiosInstance.post(`${BACKEND_SERVER}/iscalled`,{proId,userId});
+        if(response.data.success){
+       setShowFollowButton(true);
+       if(response.data.data){
+        setAlreadyFollowed(true)
+       }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+
+   fetchBookedData()
+  },[data])
  
   const profile = {
     profilepic: `${BACKEND_SERVER}/public/${data.profilepic}`,
@@ -26,7 +57,20 @@ export function ProfileCard() {
   const handleBooking = async(e) => {
     e.preventDefault();
     try {
-      navigate("/slotbooking")
+      if(userId === proId){
+        toast.error('Cannot book your own time slot', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return
+      }else{
+        navigate("/slotbooking")
+      }
+   
     } catch (error) {
       
     }
@@ -39,8 +83,33 @@ export function ProfileCard() {
     alert("linked in")
   }
 
+
+  const handleFollow = async(e)=>{
+    e.preventDefault();
+    try {
+      const response = await axiosInstance.patch(`${BACKEND_SERVER}/follow`,{userId,proId});
+      if(response.data.success){
+        Swal.fire({
+          title: "Success",
+          text: "You Follow the mentor successfully !!!.",
+          icon: "success",
+          confirmButtonText: 'OK',
+        }).then((result) => {
+          if (result.isConfirmed) {
+           navigate('/profile')
+          }
+        });
+        
+        
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
   <div style={{width:'100vw'}}>
+    <ToastContainer/>
  
  <div className="navbar-fixed">
         <Navbar />
@@ -51,7 +120,7 @@ export function ProfileCard() {
           <div className="items-start justify-between lg:flex lg:space-x-8">
             <div className="mb-6 items-center justify-center overflow-hidden md:mb-8 lg:mb-0 xl:flex">
               <div className="w-full xl:flex xl:flex-row-reverse">
-                <div className="relative mb-2.5 w-full shrink-0 overflow-hidden rounded-md border md:mb-3 xl:w-[250px] 2xl:w-[250px]">
+                <div className="relative mb-2.5 w-full shrink-0 overflow-hidden rounded-md border md:mb-3 xl:w-[300px] 2xl:w-[350px]">
                   <div className="relative">
                     <img
                       alt="Profile"
@@ -106,13 +175,17 @@ export function ProfileCard() {
                 BOOK NOW
               </button>
               <div className="mt-4 flex gap-2">
-                <button
-                  type="button"
-                  className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
-                >
-                  <Heart size={16} className="mr-3" />
-                  Follow
-                </button>
+              {showFollowButton && (
+  <button
+    type="button"
+    className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
+    onClick={handleFollow}
+  >
+    {!alreadyFollowed && <Heart size={16} className="mr-3" />}
+    {alreadyFollowed ? 'UNFOLLOW' : 'FOLLOW'}
+  </button>
+)}
+
                 <button
                   type="button"
                   className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"

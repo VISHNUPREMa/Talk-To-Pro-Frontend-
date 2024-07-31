@@ -125,7 +125,10 @@ function Login() {
       console.log('Email:', email);
       console.log('Password:', password);
       const response = await axiosInstance.post(`${BACKEND_SERVER}/login`, { email, password });
-      if (response.status === 200) {
+      console.log("response : ",response);
+      if (response.data.data.success) {
+        console.log(response);
+        alert("enter")
         console.log("response : ",response.data.data);
         const { accessToken, refreshToken, userInfo } = response.data.data.data;
         console.log([accessToken, refreshToken, userInfo ]);
@@ -138,6 +141,16 @@ function Login() {
         navigate('/');       
         console.log("d");     
        
+      }else{
+        console.log("not entered");
+        toast.error(response?.data?.data?.message || 'An error occurred during signup.', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     } catch (error) {
       console.log(error);

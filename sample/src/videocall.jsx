@@ -4,7 +4,7 @@ import { FaPhone, FaTimes } from 'react-icons/fa';
 import { io } from "socket.io-client";
 import Swal from 'sweetalert2';
 import { useData } from "./pages/contexts/userDataContext";
-
+import Navbar from "./pages/user/usercomponents/navbar";
 import { BACKEND_SERVER } from "./secrets/secret";
 import axiosInstance from "./instance/axiosInstance";
 
@@ -19,14 +19,10 @@ const configuration = {
 
 function App() {
  
-  const [sentId , setSentId] = useState("")
-
-
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
   const { user } = useData();
-
-  
-
-const room = '123456';
+  const room = '123456';
 
   
 useEffect(()=>{
@@ -85,6 +81,13 @@ useEffect(() => {
     Swal.fire({
       title: 'Call ended',
     });
+  });
+
+  socket.on('chat-message', (data) => {
+    const {message , fromId} = data
+    alert("message")
+    console.log("message fron other  : ",message);
+    setMessages(prevMessages => [...prevMessages, { sender: fromId, message: message }]);
   });
 
   return () => {
@@ -177,6 +180,7 @@ socket.on('cut-call', () => {
       return;
     }
     try {
+     
       await pc.current.setRemoteDescription(new RTCSessionDescription(answer));
     } catch (e) {
       console.log(e);
@@ -233,13 +237,13 @@ socket.on('cut-call', () => {
   const [videoState, setVideoState] = useState(true);
 
 async function startB() {
-  alert("make a call 3");
+  
   try {
     const id = user.userid;
     const response = await axiosInstance.post(`${BACKEND_SERVER}/call`, { id });
     if (response) {
       console.log("response : ", response.data.data);
-      setSentId(response.data.data); 
+      
       localStream.current = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: { echoCancellation: true },
@@ -292,7 +296,22 @@ async function startB() {
     }
   }
 
+  const sendMessage = () => {
+    if (newMessage.trim() !== "") {
+      socket.emit("chat-message", { room, message: newMessage, sender: user.userid });
+      setMessages([...messages, { sender: user.userid, message: newMessage }]);
+      setNewMessage("");
+    }
+  };
+
+
+
   return (
+    <div style={{ width: '100vw' }}>
+     <div className="navbar-fixed">
+          <Navbar />
+        </div>
+   
     <div className='bg-white w-screen h-screen fixed top-0 left-0 z-50 flex justify-center items-center'>
       <div className='flex flex-col md:flex-row items-center justify-center'>
         <div className='flex flex-col items-center space-y-4 md:space-y-8'>
@@ -320,6 +339,33 @@ async function startB() {
           {videoState ? <FiVideo className='h-5 w-5' /> : <FiVideoOff className='h-5 w-5' />}
         </button>
       </div>
+      <div className='absolute right-0 top-0 h-full w-80 bg-white shadow-md border-l border-gray-300 flex flex-col overflow-x-hidden'>
+        <div className='flex-grow overflow-y-auto p-4'>
+          <div className='mb-4 text-lg font-bold'>Chat</div>
+          {messages.map((msg, index) => (
+            <div key={index} className={`mb-2 ${msg.sender === user.userid ? 'text-right' : 'text-left'}`}>
+              <div className={`inline-block p-2 rounded ${msg.sender === user.userid ? 'bg-green-500 text-white' : 'bg-gray-800 text-white'}`}>
+                {msg.message}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className='p-4 border-t border-gray-300'>
+          <input
+            type='text'
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder='Type a message...'
+            className='w-full p-2 border border-gray-300 rounded'
+            onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
+          />
+          <button onClick={sendMessage} className='w-full mt-2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600'>
+            Send
+          </button>
+        </div>
+        </div>
+
+    </div>
     </div>
   );
 }

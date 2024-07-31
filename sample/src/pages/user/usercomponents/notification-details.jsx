@@ -2,17 +2,18 @@ import React from 'react';
 import { useNotification } from '../customhooks/notification-hook';
 import Navbar from './navbar';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+
 
 const NotificationDetails = () => {
+  const navigate = useNavigate()
   const {singleNotification} = useNotification({});
 
   if (!singleNotification) {
     return <div>Loading...</div>;
   }
-
-  const { date } = singleNotification._id;
-  const { time, status, amount, bookedBy } = singleNotification.slots[0];
-  const { providedBy } = singleNotification;
+  const { time, status, amount, bookedBy,date,providedBy } = singleNotification;
+  
 
   const parseDateTime = (dateStr, timeStr) => {
     const combinedDateTime = `${dateStr} ${timeStr}`;
@@ -21,18 +22,53 @@ const NotificationDetails = () => {
 
   const handleCall = async () => {
     try {
-  
+      console.log("notification details : ",singleNotification);
+      console.log([date , time, status, amount, bookedBy , providedBy]);
+      const dateOnly = date.split('T')[0];
+   
       const notificationDateTime = parseDateTime(date, time);
       const now = new Date();
+
+const todayDate = now.toISOString().slice(0, 10);
+
+
+const todayTime = now.toLocaleTimeString('en-US', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true,
+}).replace(':', '.');
+
+const getTimeComponents = (timeString) => {
+  // Split the string by space to separate the time and period
+  const [hourAndMinute, period] = timeString.split(' ');
   
-      if (now.getTime() === notificationDateTime.getTime()) {
+  // Split the hour and minute part by dot and take only the hour
+  const [hour] = hourAndMinute.split('.');
+
+  return { hour, period: period.toLowerCase() };
+};
+
+const todayComponents = getTimeComponents(todayTime);
+const timeComponents = getTimeComponents(time);
+const todatTime = todayComponents.hour;
+const bookTime = timeComponents.hour.slice(0,2);
+console.log([todatTime , bookTime]);
+  
+      if (todayDate === dateOnly) {
         console.log("The current date and time match the notification date and time.");
-        navigator('/videocall');
+        navigate('/videocall')
+        if(todatTime === bookTime){
+         console.log("same time");
+        }else{
+          console.log("Invalid time");
+        }
+
+  
       } else {
-        console.log("The current date and time do not match the notification date and time.");
+        console.log("The current date  do not match the notification date ");
         Swal.fire({
-          title: "The current date and time do not match the notification date and time.",
-          text: "Please ensure you are trying to join the call at the scheduled time.",
+          title: "The current date  do not match the notification date .",
+          text: "Please ensure you are trying to join the call at the scheduled date.",
           icon: "warning",
           showCancelButton: true,
           confirmButtonText: 'OK',

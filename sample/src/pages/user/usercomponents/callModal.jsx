@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../../style/callmodal.css';
 import { io } from "socket.io-client";
 import { useData } from '../../contexts/userDataContext';
+
 const socket = io("http://localhost:3000", { transports: ["websocket"] });
 
 const CallModal = ({ callData, onClose }) => {
