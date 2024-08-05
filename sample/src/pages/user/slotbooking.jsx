@@ -6,6 +6,7 @@ import axiosInstance from '../../instance/axiosInstance';
 import { BACKEND_SERVER } from '../../secrets/secret.js';
 import PayPalIntegration from './usercomponents/paypalComponent';
 import Navbar from './usercomponents/navbar';
+import { useData } from '../contexts/userDataContext.jsx';
 
 const Booking = () => {
   const { proProfile } = useContext(ProfileContext);
@@ -14,6 +15,7 @@ const Booking = () => {
   const [fetchedSlots, setFetchedSlots] = useState([]);
   const [showPayPal, setShowPayPal] = useState(false);
   const [amount, setAmount] = useState(0);
+  const { user } = useData();
 
   const dates = Array.from({ length: 7 }, (_, i) => addDays(selectedDate, i));
 
@@ -101,6 +103,49 @@ const Booking = () => {
     }
   };
 
+  const handleSubscription = async () => {
+    try {
+      const permission = await Notification.requestPermission();
+
+      if (permission === 'granted') {
+        // Register the service worker
+
+        // Ensure the service worker is active
+        const serviceWorkerReg = await navigator.serviceWorker.ready;
+        console.log('Service worker is active');
+
+        let subscription = await serviceWorkerReg.pushManager.getSubscription();
+        const url = '/sw.js';
+        const reg = await navigator.serviceWorker.register(url, { scope: '/' });
+        console.log('Service worker registered:', reg);
+
+        if (!subscription) {
+          subscription = await serviceWorkerReg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: 'BATvUXb1-YuDZFwAl4MAsPWJkTPLIf0r64s_ufJMGGh9XapE-F64PpWRIxPjSCDyPyByluwv3F3ZiyfRvWXWHAw',
+          });
+        }
+
+        const subscriptionJSON = JSON.stringify(subscription);
+        await axiosInstance.post(`${BACKEND_SERVER}/storePushNotification`, { 
+          subscription: subscriptionJSON,
+          id: user.userid 
+        });
+        
+       
+
+      } else {
+        console.log('Notification permission denied');
+      }
+    } catch (error) {
+      console.error('Error during subscription:', error);
+    }
+  };
+
+  useEffect(() => {
+    handleSubscription();
+  }, []);
+
   return (
     <div style={{ width: '100vw' }}>
       <div className="navbar-fixed">
@@ -183,7 +228,12 @@ const Booking = () => {
                   proId={proProfile.userid}
                 />
               ) : (
-                <button className="bg-yellow-500 text-white py-3 px-6 rounded text-lg" onClick={handlePayNow}>Pay Now</button>
+                <button
+                  onClick={handlePayNow}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded w-full"
+                >
+                  Pay Now
+                </button>
               )}
             </div>
           </div>

@@ -13,7 +13,6 @@ import UserNotification from '../navbar-components/userNotification';
 const Navbar = () => {
   const { setUser: setGlobalUser } = useData();
   const navigate = useNavigate();
-  const { setToken, logout } = useContext(AuthContext);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);

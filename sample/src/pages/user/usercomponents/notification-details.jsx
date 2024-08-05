@@ -30,6 +30,8 @@ const NotificationDetails = () => {
       const now = new Date();
 
 const todayDate = now.toISOString().slice(0, 10);
+console.log("notificationDateTime : ",dateOnly);
+console.log("todayDate : ",todayDate);
 
 
 const todayTime = now.toLocaleTimeString('en-US', {
@@ -49,18 +51,31 @@ const getTimeComponents = (timeString) => {
 };
 
 const todayComponents = getTimeComponents(todayTime);
+console.log("todayComponents : ",todayComponents);
+
 const timeComponents = getTimeComponents(time);
+console.log("timeComponents : ",timeComponents);
+
 const todatTime = todayComponents.hour;
+console.log("todatTime : ",todatTime);
+
 const bookTime = timeComponents.hour.slice(0,2);
-console.log([todatTime , bookTime]);
+console.log("bookTime : ",bookTime);
+
   
       if (todayDate === dateOnly) {
-        console.log("The current date and time match the notification date and time.");
-        navigate('/videocall')
+       
         if(todatTime === bookTime){
-         console.log("same time");
+        navigate('/videocall')
         }else{
-          console.log("Invalid time");
+          Swal.fire({
+            title: "The current time do not match the notification date .",
+            text: "Please ensure you are trying to join the call at the scheduled date.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+          });
         }
 
   

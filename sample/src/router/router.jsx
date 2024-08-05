@@ -18,8 +18,10 @@ import { AuthProvider } from '../pages/user/usercomponents/jwtAuthContext';
 import UserBooking from "../pages/user/usercomponents/userBooking";
 import UserTransactions from "../pages/user/usercomponents/userTransactions";
 import VideoCall from "../videocall";
-import UserNotification from "../pages/user/navbar-components/userNotification";
 import NotificationDetails from "../pages/user/usercomponents/notification-details";
+import ProfileEditPage from "../pages/user/usercomponents/editUser";
+import SearchPage from "../pages/user/searchPage";
+
 
 
 
@@ -47,6 +49,9 @@ function Routers(){
           <Route path="/transaction" element={<Dashboard><UserTransactions/></Dashboard>} />
            <Route path="/videocall" element={<VideoCall/>} /> 
            <Route path="/singlenotification" element={<NotificationDetails/>} /> 
+           <Route path="/edit" element={<ProfileEditPage/>} /> 
+           <Route path="/search" element={<SearchPage/>} /> 
+           
            
 
           

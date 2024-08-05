@@ -124,36 +124,3 @@
 
   }
 
-
-.side-menu.open {
-  transform: translateX(0); /* Slide in from the right */
-}
-
-.side-menu-header {
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.side-menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.side-menu-item {
-  width: 200px; /* Full width of the side menu */
-  padding: 15px 20px;
-  cursor: pointer;
-
-}
-
-.side-menu-item:hover {
-  background-color: #f0f0f0;
-}

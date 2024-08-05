@@ -1,17 +1,14 @@
-import React, { useState ,  useContext  } from 'react';
-
+import React, { useState } from 'react';
 import {BACKEND_SERVER} from '../../../secrets/secret.js'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../../../instance/axiosInstance';
 import { useNavigate } from 'react-router-dom';
-
-  
 import { useData } from '../../contexts/userDataContext';
 
 export function UserBanner() {
   const navigate = useNavigate()
-  const { user } = useData(); 
+  const { user, setUser } = useData(); 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     profession: '',
@@ -61,7 +58,7 @@ export function UserBanner() {
         }
       });
 
-      if(response){
+      if(response.data.success){
         console.log("response:", response);
         toast.success('Register  successful!', {
           position: 'top-right',
@@ -71,8 +68,12 @@ export function UserBanner() {
           pauseOnHover: true,
           draggable: true,
         });
+
         closeModal(); 
-  
+        setUser(prevUser => ({
+          ...prevUser,
+          isServiceProvider: true
+        }));
        
       }
       
@@ -107,7 +108,9 @@ export function UserBanner() {
         <hr className="border-t border-gray-700 my-4" />
        {user.isServiceProvider === false ? <a onClick={handleRegister} className="btn btn-outline-light border border-white text-white py-2 px-4 rounded-md hover:bg-white hover:text-gray-900">
           register now
-        </a>:null}
+        </a>:<a  className="btn btn-outline-light border border-white text-white py-2 px-4 rounded-md hover:bg-white hover:text-gray-900">
+          Edit Details
+        </a>}
       </div>
 
       {showModal && (

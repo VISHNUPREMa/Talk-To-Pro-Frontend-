@@ -19,7 +19,7 @@ export function CardOne({ profile }) {
   };
 
   return (
-    <div className="relative h-[400px] w-[300px] rounded-md overflow-hidden transition-transform duration-300 hover:scale-105">
+    <div className="relative h-[360px] w-[270px] rounded-md overflow-hidden transition-transform duration-300 hover:scale-105">
       <img
         src={`${BACKEND_SERVER}/public/${profile.profilepic}`}
         alt="Profile"
