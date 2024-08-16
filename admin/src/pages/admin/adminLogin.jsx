@@ -18,7 +18,13 @@ const LoginPage = () => {
                 console.log([email,password]);
                 const response = await axios.post(`${BACKEND_SERVER}/admin/login`,{email,password});
                 if(response.data.success){
-                localStorage.setItem("admintoken",response.data.token)
+                  const { accessToken, refreshToken,  } = response.data.data;
+
+                  console.log("response access token : ",accessToken);
+                  console.log("response refresh token : ",refreshToken);
+                  document.cookie = `adminaccessToken=${accessToken}; path=/`;
+                  localStorage.setItem('adminrefreshToken', refreshToken);
+                
                     navigate("/admin/dashboard")
                 }else{
                   console.log(response.data);

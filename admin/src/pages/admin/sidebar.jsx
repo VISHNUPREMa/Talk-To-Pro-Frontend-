@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import '../../style/sidebar.css';
 
-const Sidebar = ({ onShowUserList, onShowServiceProviderList , onShowBookingList ,onShowTransactionList }) => {
+const Sidebar = ({ onShowUserList, onShowServiceProviderList , onShowBookingList ,onShowTransactionList , onShowProRequestsList }) => {
   const [showUserList, setShowUserList] = useState(false);
   const [showServiceProviderList, setShowServiceProviderList] = useState(false);
   const [showBookingList , setShowBookingList] = useState(false);
-  const [showTransactionList , setShowTransactionList] = useState(false)
+  const [showTransactionList , setShowTransactionList] = useState(false);
+  const [showProRequests , setShowProRequests] = useState(false)
 
   const handleShowUserList = () => {
     setShowUserList(true);
     setShowServiceProviderList(false);
     setShowBookingList(false)
     setShowTransactionList(false)
+    setShowProRequests(false)
     onShowUserList(); 
   };
 
@@ -20,6 +22,7 @@ const Sidebar = ({ onShowUserList, onShowServiceProviderList , onShowBookingList
     setShowServiceProviderList(true);
     setShowBookingList(false)
     setShowTransactionList(false)
+    setShowProRequests(false)
     onShowServiceProviderList(); 
   };
 
@@ -28,6 +31,7 @@ const Sidebar = ({ onShowUserList, onShowServiceProviderList , onShowBookingList
     setShowServiceProviderList(false);
     setShowBookingList(true)
     setShowTransactionList(false)
+    setShowProRequests(false)
     onShowBookingList();
     
   }
@@ -38,7 +42,18 @@ const Sidebar = ({ onShowUserList, onShowServiceProviderList , onShowBookingList
     setShowServiceProviderList(false);
     setShowBookingList(false)
     setShowTransactionList(true)
+    setShowProRequests(false)
     onShowTransactionList();
+
+  }
+
+  const handleProRequests = () => {
+    setShowUserList(false);
+    setShowServiceProviderList(false);
+    setShowBookingList(false)
+    setShowTransactionList(false)
+    setShowProRequests(true)
+    onShowProRequestsList()
 
   }
 
@@ -65,6 +80,10 @@ const Sidebar = ({ onShowUserList, onShowServiceProviderList , onShowBookingList
 
           <div className={`menu-item service-provider ${showTransactionList ? 'active' : ''}`} onClick={handleTransactionList}>
             <a className="block text-white">Transactions</a>
+          </div>
+
+          <div className={`menu-item service-provider ${showProRequests ? 'active' : ''}`} onClick={handleProRequests}>
+            <a className="block text-white">Professional Requests</a>
           </div>
 
         </div>

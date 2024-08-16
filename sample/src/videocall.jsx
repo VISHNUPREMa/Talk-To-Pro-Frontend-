@@ -7,6 +7,14 @@ import { useData } from "./pages/contexts/userDataContext";
 import Navbar from "./pages/user/usercomponents/navbar";
 import { BACKEND_SERVER } from "./secrets/secret";
 import axiosInstance from "./instance/axiosInstance";
+import StarRating from "./pages/user/usercomponents/ratingStar";
+import './style/starrating.css'
+import { IoMdClose } from "react-icons/io";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useLocation } from 'react-router-dom';
+
+
 
 const socket = io("http://localhost:3000", { transports: ["websocket"] });
 
@@ -22,12 +30,20 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const { user } = useData();
+  const userid = user.userid
   const room = '123456';
-
+  const [toId , setToId] = useState('');
+  const [customerId , setCustomerId] = useState('');
+  const [showRating, setShowRating] = useState(false);
+  const [stars , setStars] = useState(null);
+  const [bookingId , setBookingId] = useState('')
+  const location = useLocation();
+  const bookTime = location.state?.time;
+ 
   
 useEffect(()=>{
   
-  const userid = user.userid
+
   console.log("user id : ",userid);
 socket.emit('on',{userid})
 },[])
@@ -77,6 +93,7 @@ useEffect(() => {
   });
 
   socket.on('ignoredStatus', () => {
+    alert("a")
     hangup();
     Swal.fire({
       title: 'Call ended',
@@ -108,6 +125,30 @@ socket.on('cut-call', () => {
     }
   });
 });
+
+socket.on('review',()=>{
+  Swal.fire({
+    title: 'Do you finish the call?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'Reconnect',
+  }).then((result) => {
+    if (result.isConfirmed) {
+   
+      console.log("Call finished.");
+      setShowRating(true);
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      console.log("Reconnecting to the call...");
+      startB()
+    }
+  });
+  
+
+
+
+
+})
 
 
 
@@ -211,7 +252,7 @@ socket.on('cut-call', () => {
   }
   
 
-  async function hangup() {
+  async function hangup(callend) {
  
     if (pc.current) {
       pc.current.close();
@@ -225,6 +266,9 @@ socket.on('cut-call', () => {
     hangupButton.current.disabled = true;
     muteAudButton.current.disabled = true;
     muteVideoButton.current.disabled = true; // Use muteVideoButton here
+    if(callend){
+      socket.emit('review',{room,customerId})
+    }
   }
 
   useEffect(() => {
@@ -241,15 +285,29 @@ async function startB() {
   try {
     const id = user.userid;
     const response = await axiosInstance.post(`${BACKEND_SERVER}/call`, { id });
-    if (response) {
-      console.log("response : ", response.data.data);
+    if (response.data.success) {
+      console.log("response : ",response);
+      
+      
+      setCustomerId(response.data.message)
+      setToId(response.data.data.id);
+      setBookingId(response.data.data.bookid);
       
       localStream.current = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: { echoCancellation: true },
       });
       localVideo.current.srcObject = localStream.current;
-      socket.emit("call-request", { room, from: id, to: response.data.data });
+      socket.emit("call-request", { room, from: id, to: response.data.data.id });
+    }else{
+      toast.error(response.data.message, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   } catch (err) {
     console.log(err);
@@ -272,7 +330,7 @@ async function startB() {
       cancelButtonText: 'No',
     }).then((res) => {
       if (res.isConfirmed) {
-        hangup();
+        hangup({callend:true});
         socket.emit("calling", { room, data: { type: "bye" } });
       }
     });
@@ -304,6 +362,44 @@ async function startB() {
     }
   };
 
+  const handleRating = (rating) => {
+  
+    console.log(`User clicked on ${rating} star(s)`);
+    setStars(rating)
+  };
+
+  const handleCloseRating = async()=>{
+    try {
+      setShowRating(false);
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+  const handleRateNow = async()=>{
+    try {
+     const response = await axiosInstance.put(`${BACKEND_SERVER}/rating`,{stars,toId,bookingId,bookTime});
+     if(response.data.success){
+      console.log("response of rating : ",response);
+      toast.success(response.data.message, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+     
+      
+     }
+      
+     setShowRating(false);
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 
 
   return (
@@ -311,6 +407,7 @@ async function startB() {
      <div className="navbar-fixed">
           <Navbar />
         </div>
+        <ToastContainer />
    
     <div className='bg-white w-screen h-screen fixed top-0 left-0 z-50 flex justify-center items-center'>
       <div className='flex flex-col md:flex-row items-center justify-center'>
@@ -339,7 +436,7 @@ async function startB() {
           {videoState ? <FiVideo className='h-5 w-5' /> : <FiVideoOff className='h-5 w-5' />}
         </button>
       </div>
-      <div className='absolute right-0 top-0 h-full w-80 bg-white shadow-md border-l border-gray-300 flex flex-col overflow-x-hidden'>
+      <div className='absolute right-0 top-10  w-80 bg-white shadow-md border-l border-gray-300 flex flex-col overflow-x-hidden' style={{ height: '95%' }}>
         <div className='flex-grow overflow-y-auto p-4'>
           <div className='mb-4 text-lg font-bold'>Chat</div>
           {messages.map((msg, index) => (
@@ -364,9 +461,21 @@ async function startB() {
           </button>
         </div>
         </div>
+        {showRating && (
+        <div className="rating-container">
+          
+        <IoMdClose size={35} id="close-rating" onClick={handleCloseRating} />
+          <h2>Please rate your call</h2>
+          <StarRating onRating={handleRating} />
+          
+          <button id="rate-btn" onClick={handleRateNow}>Rate Now</button>
+        </div>
+      )}
+        
 
     </div>
     </div>
+     
   );
 }
 

@@ -63,10 +63,12 @@ const bookTime = timeComponents.hour.slice(0,2);
 console.log("bookTime : ",bookTime);
 
   
-      if (todayDate === dateOnly) {
+     
+if (todayDate === dateOnly) {
        
-        if(todatTime === bookTime){
-        navigate('/videocall')
+  if(todatTime === bookTime){
+  navigate('/videocall',{state:{time:bookTime}})
+  
         }else{
           Swal.fire({
             title: "The current time do not match the notification date .",

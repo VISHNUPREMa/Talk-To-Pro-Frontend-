@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { X, Home, DollarSign, Bell, CreditCard, Heart, Settings, LogOut, ArrowRight } from 'lucide-react';
 import '../../../style/sidemenu.css';
 import { useData } from '../../contexts/userDataContext';
+import { MdAccountBalance } from "react-icons/md";
 
 import {BACKEND_SERVER} from '../../../secrets/secret.js'
 import { useNavigate } from 'react-router-dom';
@@ -39,8 +40,9 @@ const SideMenu = ({ isOpen, toggleSideMenu }) => {
               navigate('/booking')
             }else if (content === 'Your Transactions'){
               navigate('/transaction')
-            }else if(content === 'Notifications'){
-               alert("Notification")
+            }else if(content === 'account details'){
+             
+               navigate('/accountdetails')
             }
 
         } catch (error) {
@@ -58,8 +60,8 @@ const SideMenu = ({ isOpen, toggleSideMenu }) => {
         <li className="side-menu-item" onClick={() => handleItemClick('Your Transactions')}>
           <DollarSign className="menu-icon" /> Your Transactions
         </li>
-        <li className="side-menu-item" onClick={() => handleItemClick('Notifications')}>
-          <Bell className="menu-icon" /> Notifications
+        <li className="side-menu-item" onClick={() => handleItemClick('account details')}>
+        <MdAccountBalance className="menu-icon" size={25} /> Account Details
         </li>
         <li className="side-menu-item" onClick={() => handleItemClick('Wallet')}>
           <CreditCard className="menu-icon" /> Wallet

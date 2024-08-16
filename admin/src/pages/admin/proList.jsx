@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ProList = () => {
   const [proData, setProData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
 
   useEffect(() => {
     fetchProData();
@@ -87,7 +89,16 @@ const ProList = () => {
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentUsers = proData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+
   return (
+    <>
     <div className="table-responsive" style={{ marginTop: '50px' }}>
       <ToastContainer />
       <table className="table table-hover table-nowrap">
@@ -101,7 +112,7 @@ const ProList = () => {
           </tr>
         </thead>
         <tbody>
-          {proData.map((row, index) => (
+          {currentUsers.map((row, index) => (
             <tr key={index}>
               <td>
                 <img
@@ -133,6 +144,57 @@ const ProList = () => {
         </tbody>
       </table>
     </div>
+
+
+    <nav className="pagination-nav">
+  <ul className="pagination justify-content-center">
+    {/* Previous Button */}
+    {currentPage > 1 && (
+      <li className="page-item">
+        <a onClick={() => paginate(currentPage - 1)} className="page-link text-black">
+          Previous
+        </a>
+      </li>
+    )}
+    
+    {/* Page Numbers */}
+    {Array.from({ length: Math.ceil(proData.length / itemsPerPage) }, (_, index) => {
+      const pageNumber = index + 1;
+
+      // Show page numbers at the beginning, end, and around the current page
+      if (
+        pageNumber <= 2 || 
+        pageNumber === Math.ceil(proData.length / itemsPerPage) || 
+        (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+      ) {
+        return (
+          <li key={index} className={`page-item ${pageNumber === currentPage ? 'active' : ''}`}>
+            <a onClick={() => paginate(pageNumber)} className="page-link text-black">
+              {pageNumber}
+            </a>
+          </li>
+        );
+      }
+
+      // Show ellipsis for omitted pages
+      if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
+        return <li key={index} className="page-item"><span className="page-link">...</span></li>;
+      }
+
+      return null;
+    })}
+
+    {/* Next Button */}
+    {currentPage < Math.ceil(proData.length / itemsPerPage) && (
+      <li className="page-item">
+        <a onClick={() => paginate(currentPage + 1)} className="page-link text-black">
+          Next
+        </a>
+      </li>
+    )}
+  </ul>
+</nav>
+</>
   );
 };
 

@@ -2,15 +2,15 @@ body {
     font-family: Arial, sans-serif;
   }
   
-  .dashboard {
+  .dashboard-console {
     display: flex;
-    flex-direction: row;
+
     min-width: 70vw;
     height: 70vh;
     border-radius: 10px;
   }
   
-  .sidebar {
+  .sidebar-1-console {
     width: 200px;
     background-color: white;
     box-shadow: 5px 4px 8px 5px rgba(0, 58, 116, 0.3), 0 6px 20px 0 rgba(0, 58, 116, 0.29);
@@ -38,8 +38,10 @@ body {
     cursor: pointer;
   }
   
-  .main-content {
-    flex-grow: 1;
+  .main-content-console {
+    margin-top: 0; 
+    max-height: 90vh;
+    margin-left: 30px;
     padding: 20px;
     background-color: #f8f8f8;
   }
@@ -47,16 +49,15 @@ body {
   .profile-analytics {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    height: auto;
   }
   
-  .allow-slot, .analytics-summary, .provider-insider {
+  .allow-slot-1, .analytics-summary, .provider-insider {
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     flex: 1;
     margin-right: 20px;
-    margin-top: 25px;
     text-align: center;
   }
   

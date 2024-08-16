@@ -21,6 +21,9 @@ import VideoCall from "../videocall";
 import NotificationDetails from "../pages/user/usercomponents/notification-details";
 import ProfileEditPage from "../pages/user/usercomponents/editUser";
 import SearchPage from "../pages/user/searchPage";
+import UserProfile from "../pages/user/usercomponents/userprofile";
+import Invoice from "../pages/user/usercomponents/invoice";
+import ReviewPage from "../pages/user/usercomponents/reviewpage";
 
 
 
@@ -51,7 +54,9 @@ function Routers(){
            <Route path="/singlenotification" element={<NotificationDetails/>} /> 
            <Route path="/edit" element={<ProfileEditPage/>} /> 
            <Route path="/search" element={<SearchPage/>} /> 
-           
+           <Route path="/accountdetails" element={<UserProfile/>} /> 
+           <Route path="/invoice" element={<Invoice/>} /> 
+           <Route path="/review" element={<ReviewPage/>} /> 
            
 
           

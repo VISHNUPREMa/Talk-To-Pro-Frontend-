@@ -2,5 +2,30 @@
 .table-responsive .table-cell {
   font-size: 1.25rem !important; /* Use !important if other styles are overriding */
 }
+.pagination-nav {
+ margin-left: -150px;
+  position: fixed;
+  width: 100%;
+  bottom: 10px;
+  padding: 10px 0;
+
+ 
+}
+
+.pagination .page-link {
+  color: black; /* Text color for pagination buttons */
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #007bff; /* Optional: Change active page background color */
+  border-color: #007bff;     /* Optional: Change active page border color */
+  color: white;              /* Optional: Change active page text color */
+}
+
+.pagination .page-link:hover {
+  color: #0056b3; /* Optional: Hover color for pagination links */
+}
+
+
 
   

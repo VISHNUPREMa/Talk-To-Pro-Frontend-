@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Clock, Youtube } from 'lucide-react';
+
 import '../../style/console.css';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../user/usercomponents/navbar';
@@ -24,8 +25,8 @@ const Console = () => {
   <div className="navbar-fixed">
         <Navbar />
       </div>
-    <div className="dashboard">
-      <aside className="sidebar">
+    <div className="dashboard-console">
+      <aside className="sidebar-1-console">
         <ul className="menu-list">
           <li className="menu-item" onClick={() => setSelectedMenuItem('DASHBOARD')}>DASHBOARD</li>
           <li className="menu-item" onClick={() => setSelectedMenuItem('CONTENT')}>CONTENT</li>
@@ -33,11 +34,11 @@ const Console = () => {
           <li className="menu-item" onClick={() => setSelectedMenuItem('REVIEWS')}>REVIEWS</li>
         </ul>
       </aside>
-      <main className="main-content">
+      <main className="main-content-console">
         {selectedMenuItem === 'DASHBOARD' && (
           <>
             <div className="profile-analytics">
-              <div className="allow-slot">
+              <div className="allow-slot-1">
                 <Clock size={48} />
                 <p>Allow your available time</p>
                 <button className="allow-slot-button" onClick={handleSlotBooking}>ALLOW SLOT</button>
@@ -50,13 +51,13 @@ const Console = () => {
                 <p>Hours: <span>60.30</span></p>
               </div>
             </div>
-            <div className="provider-insider">
+            {/* <div className="provider-insider">
               <h2>PROVIDER INSIDER</h2>
               <div className="insider-content">
                 <Youtube size={48} />
                 <p>Here is the detail demo of how to use "Talk to Pro" as a service provider and earn money...</p>
               </div>
-            </div>
+            </div> */}
           </>
         )}
         {selectedMenuItem === 'CONTENT' && <div>Content Section</div>}

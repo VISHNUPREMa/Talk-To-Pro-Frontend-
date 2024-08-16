@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Menu } from 'lucide-react';
-import '../../../style/navbar.css';
+import { IoMenuSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import '../../../../public/profile.png';
 import SearchContext from '../context/searchContext';
@@ -9,9 +9,12 @@ import { AuthContext } from './jwtAuthContext';
 import { useData } from '../../contexts/userDataContext';
 import { IoNotifications } from "react-icons/io5";
 import UserNotification from '../navbar-components/userNotification';
+import { FaVideo } from "react-icons/fa6";
+import '../../../style/navbar.css'
 
-const Navbar = () => {
-  const { setUser: setGlobalUser } = useData();
+const Navbar = ({callData}) => {
+  const { setUser: setGlobalUser ,user} = useData();
+const username = user.username
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
@@ -70,6 +73,17 @@ const Navbar = () => {
     }
   }
 
+
+  const handleVideoCall = async(e)=>{
+    e.preventDefault();
+    try {
+      navigate("/videocall", { state: { callData } }); 
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
   return (
     <div className="navbar">
       <div className="container">
@@ -84,11 +98,14 @@ const Navbar = () => {
             value={searchTerm}
             onChange={handleSearchChange}
           />
+          {callData &&<FaVideo size={30} style={{marginLeft:'25px'}}  onClick={handleVideoCall} />}
           {showNotification&&<UserNotification/>}
-         <IoNotifications style={{ fontSize: '24px', marginLeft: '50px' }} onClick={handleNotification} />
+         <IoNotifications style={{ fontSize: '24px', marginLeft: '25px', cursor:'pointer' }} onClick={handleNotification} />
           <div className="profile-icon">
             <img src="../../../../profile.png" alt="Profile" className="profile-pic" />
+            
           </div>
+          <p>{username}</p>
           {isAuthenticated ? (
             <button className="logout-btn" onClick={handleLogout}>
               Logout
@@ -99,7 +116,7 @@ const Navbar = () => {
             </button>
           )}
           <div className="menu-icon" onClick={toggleSideMenu}>
-            <Menu className="icon" />
+          <IoMenuSharp size={40} />
           </div>
         </div>
       </div>

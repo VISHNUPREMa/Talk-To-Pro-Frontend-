@@ -8,7 +8,8 @@ const AdminNavbar = () => {
   const handleAdminLogout = async(e) =>{
     e.preventDefault();
     try {
-      localStorage.removeItem("admintoken");
+       document.cookie = "adminaccessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+       localStorage.removeItem('adminrefreshToken');
       navigate("/admin")
       
     } catch (error) {

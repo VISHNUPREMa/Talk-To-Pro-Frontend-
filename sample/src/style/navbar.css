@@ -29,14 +29,14 @@
     flex-grow: 1;
   }
   
-  .menu-icon, .profile, .logo {
-    margin-left: 100px;
-  }
+  
   
   .menu-icon img, .icon {
     width: 24px;
     height: 24px;
     cursor: pointer;
+    color: black;
+    display: block; 
   }
   
   .profile {

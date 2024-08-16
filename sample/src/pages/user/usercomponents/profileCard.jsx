@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../../../instance/axiosInstance';
 import { BACKEND_SERVER } from '../../../secrets/secret';
 import Swal from 'sweetalert2';
+import { MdOutlineReviews } from "react-icons/md";
 
 export function ProfileCard() {
   const navigate = useNavigate();
@@ -143,6 +144,20 @@ export function ProfileCard() {
     }
   };
 
+
+  const handleReview =async() =>{
+    try {
+    
+      navigate('/review',{state:{userId}})
+     
+      
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
   
     return (
       <div style={{ width: '100vw' }}>
@@ -229,8 +244,9 @@ export function ProfileCard() {
                     <button
                       type="button"
                       className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
-                    >
-                      <Share size={16} className="mr-3" />SHARE
+                     onClick={handleReview} >
+                      <MdOutlineReviews size={20} style={{marginRight:'10px'}}/>
+                      REVIEWS
                     </button>
                   </div>
                  

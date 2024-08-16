@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { format, addDays, subDays } from 'date-fns';
-import '../../../style/slotbooking.css';
+import '../../../style/allocateslot.css'
 import axiosInstance from '../../../instance/axiosInstance';
 import { BACKEND_SERVER } from '../../../secrets/secret.js';
 import { useData } from '../../contexts/userDataContext';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import Navbar from '../usercomponents/navbar'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const ServiceProviderBooking = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -111,34 +113,79 @@ const ServiceProviderBooking = () => {
   const saveAvailableSlots = async () => {
     try {
       const id = user.userid;
+  console.log("selected date : ",selectedDate);
+  console.log("available arrays : ",availableSlots);
+  const currentDate = new Date();
+ console.log("current date : ",currentDate);
+ 
+         
+
+      
+  if(availableSlots.length < 1){
+    toast.error('Please select a time slot', {
+      position: 'top-right',
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+    return
+  }
+
+ 
+  if (currentDate.toDateString() === selectedDate.toDateString()) {
+    const currentHour = currentDate.getHours();
+    const currentMinutes = currentDate.getMinutes();
   
-      if (selectedDate < Date.now()) {
-        MySwal.fire({
-          title: 'Invalid Date',
-          text: 'The selected date is in the past. Please choose a valid date.',
-          icon: 'error',
-          customClass: {
-            popup: 'swal2-popup',
-            title: 'swal2-title',
-            content: 'swal2-content',
-            confirmButton: 'swal2-confirm',
-          }
-        });
-        return;
-      }
+    const isValidTimeSlot = availableSlots.some(slot => {
+      const [time, period] = slot.split(' ');
+      let [hour, minutes] = time.split(':').map(Number);
+      if (period === 'PM' && hour !== 12) hour += 12;
+      if (period === 'AM' && hour === 12) hour = 0;
+     return hour > currentHour || (hour === currentHour && minutes > currentMinutes);
+    });
+
+  
+    if (!isValidTimeSlot) {
+     
+    toast.error('Please choose a time slot that is after the current time.', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      return;
+    }
+  }else if(currentDate > selectedDate){
+
+    toast.error('Please select a valid date !!!', {
+      position: 'top-right',
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+
+    return;
+  }
+    
+   
   
       if (cashAmount < 100 || cashAmount > 5000) {
-        MySwal.fire({
-          title: 'Out of Price Range',
-          text: 'The amount should be between 100 and 5000.',
-          icon: 'error',
-          customClass: {
-            popup: 'swal2-popup',
-            title: 'swal2-title',
-            content: 'swal2-content',
-            confirmButton: 'swal2-confirm',
-          }
-        });
+       
+    toast.error('Select Price between 100 and 5000', {
+      position: 'top-right',
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
         return;
       }
   
@@ -199,7 +246,7 @@ const ServiceProviderBooking = () => {
           confirmButton: 'swal2-confirm',
         }
       });
-    }
+   }
   };
   
 
@@ -209,7 +256,8 @@ const ServiceProviderBooking = () => {
   <div className="navbar-fixed">
         <Navbar />
       </div>
-    <div className="max-w-2xl mx-auto p-6">
+      <ToastContainer />
+    <div id='allocate-div' className="max-w-2xl mx-auto p-6">
       <div className="bg-white shadow-lg rounded-lg p-6">
         <h2 className="text-2xl font-bold mb-4">Allocate Your Available Slots</h2>
         <div id="date-div">
