@@ -24,6 +24,8 @@ import SearchPage from "../pages/user/searchPage";
 import UserProfile from "../pages/user/usercomponents/userprofile";
 import Invoice from "../pages/user/usercomponents/invoice";
 import ReviewPage from "../pages/user/usercomponents/reviewpage";
+import Wallet from "../pages/user/usercomponents/wallet";
+import Favourites from "../pages/user/usercomponents/favourites";
 
 
 
@@ -57,6 +59,8 @@ function Routers(){
            <Route path="/accountdetails" element={<UserProfile/>} /> 
            <Route path="/invoice" element={<Invoice/>} /> 
            <Route path="/review" element={<ReviewPage/>} /> 
+           <Route path="/wallet" element={<Wallet/>} /> 
+           <Route path="/favourites" element={<Favourites/>} /> 
            
 
           

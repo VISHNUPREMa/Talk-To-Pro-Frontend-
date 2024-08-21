@@ -15,7 +15,8 @@ const ServiceProviderBooking = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [fetchedSlots, setFetchedSlots] = useState([]);
   const [cashAmount, setCashAmount] = useState(0);
-  const [bookedSlots , setBookedSlots] = useState([])
+  const [bookedSlots , setBookedSlots] = useState([]);
+  const [cancelledSlots , setCancelledSlots] = useState([])
   const { user } = useData();
   const MySwal = withReactContent(Swal);
 
@@ -57,6 +58,7 @@ const ServiceProviderBooking = () => {
     const dateString = date.toISOString().split('T')[0];
     const slotsForDate = slots.find(slot => slot.date.startsWith(dateString));
     setBookedSlots(slotsForDate ? slotsForDate.slots.filter(s => s.status === 'Booked').map(s => s.time) : []);
+    setCancelledSlots(slotsForDate ? slotsForDate.slots.filter(s => s.status === 'Cancelled').map(s => s.time) : []);
   };
   
 
@@ -71,7 +73,53 @@ const ServiceProviderBooking = () => {
     setSelectedDate(date);
   };
 
-  const handleTimeSlotToggleWithConfirmation = (slot) => {
+  const handleTimeSlotToggleWithConfirmation = async(slot) => {
+           try {
+            
+    if(bookedSlots.includes(slot) ){
+      const selectedDateObj = new Date(selectedDate);
+
+      // Extract hours and minutes from slot
+      const [time, modifier] = slot.split(' ');
+      let [hours, minutes] = time.split(':');
+      if (modifier === 'PM' && hours !== '12') {
+          hours = parseInt(hours, 10) + 12;
+      } else if (modifier === 'AM' && hours === '12') {
+          hours = 0;
+      }
+      
+      // Set the hours and minutes on the selectedDateObj
+      selectedDateObj.setHours(parseInt(hours, 10));
+      selectedDateObj.setMinutes(parseInt(minutes, 10));
+      
+      // Add one hour to the selectedDateObj
+      const oneHourAfter = new Date(selectedDateObj.getTime() + 60 * 60 * 1000);
+      
+      // Get the current date
+      const currentDate = new Date();
+      
+      // Calculate one hour from now
+      const oneHourFromNow = new Date(currentDate.getTime() + 60 * 60 * 1000);
+      
+      // Check if oneHourAfter is at least one hour after the current time
+      if (oneHourAfter >= oneHourFromNow) {
+          console.log("oneHourAfter is at least one hour after the current time. ....");
+          const proId =  user.userid
+          const response = await axiosInstance.put(`${BACKEND_SERVER}/pro/cancelbooking`,{slot,selectedDate,proId});
+          if(response.data.success){
+            toast.success(response.data.message)
+          }else{
+            toast.error(response.data.message)
+          }
+      } else {
+          console.log("oneHourAfter is less than one hour after the current time.");
+          toast("Cannot cancel past time slots .")
+      }
+      
+     
+      
+      return
+    }
     if (availableSlots.includes(slot)) {
       MySwal.fire({
         title: 'Are you sure?',
@@ -106,6 +154,10 @@ const ServiceProviderBooking = () => {
     } else {
       setAvailableSlots((prevSlots) => [...prevSlots, slot]);
     }
+           } catch (error) {
+            console.log(error);
+            
+           }
   };
 
   
@@ -298,14 +350,18 @@ const ServiceProviderBooking = () => {
   
         <div className="grid grid-cols-4 gap-4 mb-8" style={{ marginTop: '40px' }}>
   {timeSlots.map((slot, index) => {
-    const isAvailable = availableSlots.includes(slot);
-    const isBooked = availableSlots.includes(slot) && bookedSlots.includes(slot);
+    const isBooked = bookedSlots.includes(slot);
+    const isCancelled = cancelledSlots.includes(slot);
+    const isAvailable = availableSlots.includes(slot) && !isBooked && !isCancelled;
 
     let buttonClass = 'p-3 rounded ';
+
     if (isBooked) {
-      buttonClass += 'bg-red-500 text-white';
+      buttonClass += 'bg-red-400 text-black';
+    } else if (isCancelled) {
+      buttonClass += 'bg-blue-400 text-black';
     } else if (isAvailable) {
-      buttonClass += 'bg-green-500 text-white';
+      buttonClass += 'bg-green-400 text-black';
     } else {
       buttonClass += 'bg-gray-200';
     }
@@ -314,14 +370,15 @@ const ServiceProviderBooking = () => {
       <button
         key={index}
         className={buttonClass}
-        onClick={!isBooked ? () => handleTimeSlotToggleWithConfirmation(slot) : null}
-    
+        onClick={ !isCancelled ? () => handleTimeSlotToggleWithConfirmation(slot) : null}
+        style={{ boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)" }} 
       >
         {slot}
       </button>
     );
   })}
 </div>
+
 
 
   

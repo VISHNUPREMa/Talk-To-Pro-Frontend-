@@ -129,9 +129,9 @@ if (todayDate === dateOnly) {
             <h2 className="text-2xl font-medium mb-3">Date</h2>
             <p>{new Date(date).toLocaleDateString()}</p>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {status === 'Booked' ? <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={handleCall}>Call Now</button>
-            </div>
+            </div>:null}
         </div>
       </div>
     </div>

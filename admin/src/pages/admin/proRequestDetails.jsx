@@ -1,14 +1,17 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer,toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
 import '../../style/prodetails.css'
 import {BACKEND_SERVER} from  '../../secret/secret'
 import AdminNavbar from './adminNavbar';
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
+
 
 const ProRequestDetails = () => {
+  const navigate = useNavigate()
   const location = useLocation();
   const proRequest = location.state?.proRequest || {}; 
   const verifyPro = async()=>{
@@ -24,6 +27,9 @@ const ProRequestDetails = () => {
           pauseOnHover: true,
           draggable: true,
         });
+
+        navigate('/admin/dashboard')
+
         
       }else{
         toast.error(response.data.message, {

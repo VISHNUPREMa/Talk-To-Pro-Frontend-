@@ -43,6 +43,10 @@ const SideMenu = ({ isOpen, toggleSideMenu }) => {
             }else if(content === 'account details'){
              
                navigate('/accountdetails')
+            }else if(content === 'Wallet'){
+              navigate('/wallet')
+            }else if(content === 'Your Favourites'){
+              navigate('/favourites')
             }
 
         } catch (error) {

@@ -101,21 +101,20 @@ const UserProfile = () => {
 
   const handleSaveChanges = async () => {
     try {
-      // Check if profilePic or LinkedIn URL have changed
       if (formData.profilePic !== initialFormData.profilePic || (formData.linkedinUrl !== initialFormData.linkedinUrl && formData.linkedinUrl !== undefined)) {
         const formDataToSend = new FormData();
   
-        // Append profilePic if it has changed
+    
         if (formData.profilePic !== initialFormData.profilePic) {
           formDataToSend.append('profilePic', formData.profilePic);
         }
   
-        // Append LinkedIn URL if it has changed and is not undefined
+        
         if (formData.linkedinUrl !== initialFormData.linkedinUrl && formData.linkedinUrl !== undefined) {
           formDataToSend.append('linkedinUrl', formData.linkedinUrl);
         }
   
-        // Append userid to the form data
+      
         formDataToSend.append('userid', userid);
   
         console.log("Saving changes...", formDataToSend);

@@ -108,11 +108,7 @@ export function UserBanner() {
           <a onClick={handleRegister} className="btn btn-outline-light border border-white text-white py-2 px-4 rounded-md hover:bg-white hover:text-gray-900">
             Register now
           </a>
-        ) : (
-          <a className="btn btn-outline-light border border-white text-white py-2 px-4 rounded-md hover:bg-white hover:text-gray-900">
-            Edit Details
-          </a>
-        )}
+        ) :null}
       </div>
 
       {showModal && (

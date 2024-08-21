@@ -9,7 +9,7 @@ import '../../../style/usercards.css';
 export function CardList({ showMore = true }) { // Add showMore prop with default value
   const [profiles, setProfiles] = useState([]);
   const [sortProfile,setSortProfile] = useState([])
-  const { searchTerm } = useContext(SearchContext);
+  const { searchTerm ,ratingFilter } = useContext(SearchContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,10 +28,41 @@ export function CardList({ showMore = true }) { // Add showMore prop with defaul
 
     fetchData();
   }, []);
+ 
+  let filteredProfiles = profiles;
+  if (ratingFilter !== "" && searchTerm !== "") {
+ 
+    filteredProfiles = profiles.filter(profile => {
+      const reviews = profile.reviews;
+      const avgRating = reviews.reduce((sum, rating) => sum + rating, 0) / reviews.length;
+      
+     
+      const ratingMatches = avgRating >= parseInt(ratingFilter);
+  
+      // Check if the profession includes the searchTerm
+      const searchTermMatches = (profile.profession.toLowerCase().includes(searchTerm.toLowerCase())) ;
+      
+      return ratingMatches && searchTermMatches;
+    });
+  } else if (ratingFilter !== "") {
+    // Filter by rating only
+    filteredProfiles = profiles.filter(profile => {
+      const reviews = profile.reviews;
+      const avgRating = reviews.reduce((sum, rating) => sum + rating, 0) / reviews.length;
+      
+      return avgRating >= parseInt(ratingFilter);
+    });
+  } else if (searchTerm !== "") {
+    // Filter by search term only
+    filteredProfiles = profiles.filter(profile =>
+      profile.profession.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+  
+  
 
-  const filteredProfiles = profiles.filter(profile =>
-    profile.profession.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+   
+ 
 
   const handleSearchPage = async (e) => {
     e.preventDefault();
@@ -46,7 +77,7 @@ export function CardList({ showMore = true }) { // Add showMore prop with defaul
     <>
       <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
         {filteredProfiles.length > 0 ? (
-          filteredProfiles.map((profile) => (
+          filteredProfiles.slice(0,8).map((profile) => (
             <CardOne key={profile._id} profile={profile} />
           ))
         ) : (

@@ -6,6 +6,8 @@ import { BACKEND_SERVER } from '../../../secrets/secret.js';
 import Navbar from './navbar';
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UserBooking = () => {
   const navigate = useNavigate()
@@ -42,10 +44,23 @@ const UserBooking = () => {
   }
 
   const handleInvoicePage = (book) => {
-    alert("Navigating to invoice page");
-    console.log(book);
     navigate("/invoice", { state: { book: book } });
   };
+
+  const cancelbooking = async(id,time,date)=>{
+    try {
+      const response = await axiosInstance.patch(`${BACKEND_SERVER}/cancelbooking`,{bookingId:id,cancelBy:user.userid,time,date});
+      if(response){
+        console.log("response data : ",response.data.message);
+        
+        toast(response.data.message)
+        
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
   
 
   
@@ -54,7 +69,7 @@ const UserBooking = () => {
       <div className="navbar-fixed">
         <Navbar />
       </div>
-
+      <ToastContainer />
       <div className="user-booking">
         <h1>Your Bookings</h1>
         <div className="table-responsive">
@@ -67,6 +82,7 @@ const UserBooking = () => {
                 <th>Status</th>
                 <th>Amount</th>
                 <th>Action</th>
+                <th>More</th>
               </tr>
             </thead>
             <tbody>
@@ -99,6 +115,7 @@ const UserBooking = () => {
                       <td onClick={() => handleInvoicePage(book)}>
   View Invoice <FaLongArrowAltRight />
 </td>
+<td onClick={()=>cancelbooking(book.bookingId,book.slots.time,book.date)} style={{cursor:'pointer'}}>{book.slots.status === 'Booked'?'Calcel Booking':null}</td>
 
                     </tr>
                   );

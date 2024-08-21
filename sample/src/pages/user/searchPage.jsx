@@ -13,7 +13,9 @@ function SearchPage() {
           <Navbar />
         </div>
       </div>
-      <div className="main-content">
+      <div className="main-content" style={{ overflowY: 'auto',marginBottom:'40px' }}>
+
+
         <div>
           <SearchSidebar />
         </div>

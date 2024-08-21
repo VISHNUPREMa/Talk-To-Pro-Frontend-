@@ -117,6 +117,8 @@ const UserNotification = () => {
   };
 
   const handleSelectedNotification = async (notification) => {
+
+    
     setSingleNotification(notification);
     navigate('/singlenotification');
   };
@@ -164,14 +166,32 @@ const UserNotification = () => {
                         <i className={`fa-solid ${notification.providedBy === user.username ? 'fa-arrow-right-to-bracket' : 'fa-envelope'} fa-xl text-gray-600 group-hover:text-indigo-600`}></i>
                       </div>
                       <div>
-                        <a href="#" className="font-semibold text-gray-900">
-                          {notification.providedBy === user.username ? `Slot booked by ${notification.bookedBy}` : `You booked a slot with ${notification.providedBy}`} <span className="text-xs text-gray-400 animate-pulse">{formatDate(notification.date)}</span>
-                          <span className="absolute inset-0"></span>
-                        </a>
-                        <p className="mt-1 text-gray-600">
-                          {notification.providedBy === user.username ? `${notification.bookedBy} booked slot at ${notification.time}` : `You booked slot at ${notification.time} with ${notification.providedBy}`}
-                        </p>
-                      </div>
+  <a href="#" className="font-semibold text-gray-900">
+    {notification.status === "Cancelled" ? (
+      notification.providedBy === user.username ? 
+        `Booking with ${notification.bookedBy} was cancelled` : 
+        `Your booking with ${notification.providedBy} was cancelled`
+    ) : (
+      notification.providedBy === user.username ? 
+        `Slot booked by ${notification.bookedBy}` : 
+        `You booked a slot with ${notification.providedBy}`
+    )}
+    <span className="text-xs text-gray-400 animate-pulse">{formatDate(notification.date)}</span>
+    <span className="absolute inset-0"></span>
+  </a>
+  <p className="mt-1 text-gray-600">
+    {notification.status === "Cancelled" ? (
+      notification.providedBy === user.username ? 
+        `${notification.bookedBy} cancelled their slot at ${notification.time}` : 
+        `You cancelled your slot at ${notification.time} with ${notification.providedBy}`
+    ) : (
+      notification.providedBy === user.username ? 
+        `${notification.bookedBy} booked slot at ${notification.time}` : 
+        `You booked slot at ${notification.time} with ${notification.providedBy}`
+    )}
+  </p>
+</div>
+
                     </div>
                   ))}
                   <div className="flex justify-between mt-4">

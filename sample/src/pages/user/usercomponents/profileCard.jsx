@@ -20,16 +20,22 @@ export function ProfileCard() {
   const userId = data.userid;
   const proId = user.userid;
 
-  const [showFollowButton, setShowFollowButton] = useState(false);
   const [alreadyFollowed, setAlreadyFollowed] = useState(false);
+  const [avgReview, setAvgReview] = useState(0);
+ 
+  const [proData, setProData] = useState(null); 
 
   useEffect(() => {
     const fetchBookedData = async () => {
       try {
-        const response = await axiosInstance.post(`${BACKEND_SERVER}/iscalled`, { proId, userId });
+        const response = await axiosInstance.post(`${BACKEND_SERVER}/singlePro`, { userId });
         if (response.data.success) {
-          setShowFollowButton(true);
-          if (response.data.data) {
+           console.log("response.data.data : ",response.data.data[0].followedBy);
+          setProData(response.data.data);
+          console.log("response.data.data : ",response.data.data[0].followedBy);
+          if (response.data.data[0].followedBy.includes(proId)) {
+            
+            
             setAlreadyFollowed(true);
           }
         }
@@ -39,17 +45,27 @@ export function ProfileCard() {
     };
 
     fetchBookedData();
-  }, [proId, userId]); 
+    setAvgReview(data.reviews.reduce((acc, cur) => acc + cur, 0) / data.reviews.length);
+   
+  }, [proId, userId]);
 
+  if (!proData) {
+    return <p>Loading...</p>; // Add a loading state to handle the initial data fetching
+  }
   const profile = {
-    profilepic: `${BACKEND_SERVER}/public/${data.profilepic}`,
-    username: data.description,
-    profession: data.profession,
-    description: "I'm Viswas, a software developer with 3 years of experience in MERN, MEAN, and .NET stacks. Passionate about coding and mentorship, I'm here to guide aspiring developers on their journey to success. Let's build your skills and unlock your potential together!",
-    languages: data.languages,
-    skills: data.domain,
-    experience: data.experience
+    profilepic: `${BACKEND_SERVER}/public/${proData[0].profilepic}`,
+    username: proData[0].userdetails.username || "Username not available",
+    profession: proData[0].profession || "Profession not available",
+    description: proData[0].description || "Description not available",
+    languages: proData[0].languages || [],
+    skills: proData[0].domain || [],
+    experience: proData[0].experience || 0,
+    reviews: proData[0].reviews.length > 0 
+              ? (proData[0].reviews.reduce((acc, cur) => acc + cur, 0) / proData[0].reviews.length)
+              : 0, // Handles division by zero
+    followers: proData[0].followedBy.length
   };
+  
 
   const handleBooking = async (e) => {
     e.preventDefault();
@@ -69,12 +85,13 @@ export function ProfileCard() {
 
   const handleLinkedin = (e) => {
     e.preventDefault();
+    console.log("pro data : ", profile.reviews);
     alert("LinkedIn link");
   };
 
   const handleFollow = async (e) => {
     e.preventDefault();
-
+    // Follow/Unfollow logic with Swal and API calls...
     try {
       if (alreadyFollowed) {
     
@@ -113,6 +130,7 @@ export function ProfileCard() {
       } else {
         
         const response = await axiosInstance.patch(`${BACKEND_SERVER}/follow`, { userId, proId });
+        console.log("response : ",response.data);
         
         if (response.data.success) {
          
@@ -142,124 +160,113 @@ export function ProfileCard() {
         confirmButtonText: "OK",
       });
     }
+
   };
 
-
-  const handleReview =async() =>{
+  const handleReview = async () => {
     try {
-    
-      navigate('/review',{state:{userId}})
-     
-      
-      
+      navigate('/review', { state: { userId } });
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
 
-  
-    return (
-      <div style={{ width: '100vw' }}>
-        <ToastContainer />
-        <div className="navbar-fixed">
-          <Navbar />
-        </div>
-        <div className="profile-card mx-auto max-w-6xl px-2 py-6 lg:px-0" style={{ maxHeight: '85vh', overflowY: 'auto' }}>
-          <div className="overflow-hidden">
-            <div className="mb-6 pt-4 md:px-6 md:pt-6 lg:mb-2 lg:p-6 2xl:p-8 2xl:pt-8">
-              <div className="items-start justify-between lg:flex lg:space-x-8">
-                <div className="mb-6 items-center justify-center overflow-hidden md:mb-8 lg:mb-0 xl:flex">
-                  <div className="w-full xl:flex xl:flex-row-reverse">
-                    <div className="relative mb-2.5 w-full shrink-0 overflow-hidden rounded-md border md:mb-3 xl:w-[2750px] 2xl:w-[300px]">
-                      <div className="relative">
-                        <img
-                          alt="Profile"
-                          src={profile.profilepic}
-                          className="rounded-lg object-cover w-full h-full"
-                          style={{ aspectRatio: '1.8 / 2' }}
-                        />
-                      </div>
+  return (
+    <div style={{ width: '100vw' }}>
+      <ToastContainer />
+      <div className="navbar-fixed">
+        <Navbar />
+      </div>
+      <div className="profile-card mx-auto max-w-6xl px-2 py-6 lg:px-0" style={{ marginTop: '50px', overflowY: 'auto' }}>
+        <div className="overflow-hidden">
+          <div className="mb-6 pt-4 md:px-6 md:pt-6 lg:mb-2 lg:p-6 2xl:p-8 2xl:pt-8">
+            <div className="items-start justify-between lg:flex lg:space-x-8">
+              <div className="mb-6 items-center justify-center overflow-hidden md:mb-8 lg:mb-0 xl:flex">
+                <div className="w-full xl:flex xl:flex-row-reverse">
+                  <div className="profileCard-image relative mb-2.5 w-full shrink-0 overflow-hidden rounded-md border md:mb-3 xl:w-[275px] 2xl:w-[300px]">
+                    <div className="profileCard-image-inner relative">
+                      <img
+                        alt="Profile"
+                        src={profile.profilepic}
+                        className="rounded-lg object-cover w-full h-full"
+                        style={{ aspectRatio: '1.8 / 2' }}
+                      />
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col lg:w-[430px] xl:w-[470px] 2xl:w-[480px]">
-                  <div className="pb-4">
-                    <h2 className="text-lg font-semibold md:text-xl xl:text-2xl">{profile.username}</h2>
-                    <p className="mt-2 font-semibold">⭐ 7.2/10 (5k votes)</p>
-                  </div>
-                  <div className="mb-2 pt-0.5">
-                    <h4 className="text-15px mb-2 font-normal capitalize text-opacity-70">
-                      Languages:
-                    </h4>
-                    <div className="flex gap-2 flex-wrap">
-                      {profile.languages.map((language) => (
-                        <span key={language} className="language-tag">{language}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="profile-profession pt-2">
-                    <span>{profile.profession}</span>
-                  </div>
-                  <div className="profile-skills pt-2">
-                    {profile.skills.map((skill) => (
-                      <span key={skill} className="skill-tag">{skill}</span>
+              </div>
+              <div className="profileCard-div flex flex-col lg:w-[400px] xl:w-[400px] 2xl:w-[400px]">
+                <div className="pb-4">
+                  <h2 className="text-lg font-semibold md:text-xl xl:text-2xl">{profile.username}</h2>
+                  <p className="mt-2 font-semibold">⭐ {profile.reviews.toString().slice(0, 4)}/5</p>
+                  <p className="mt-2 font-semibold">Followed by {profile.followers} users</p>
+                </div>
+                <div className="mb-2 pt-0.5">
+                  <h4 className="text-15px mb-2 font-normal capitalize text-opacity-70">
+                    Languages:
+                  </h4>
+                  <div className="flex gap-2 flex-wrap">
+                    {profile.languages.map((language) => (
+                      <span key={language} className="language-tag">{language}</span>
                     ))}
                   </div>
-                  <span>{profile.experience} year of experience</span>
-                  <div className="pt-4 xl:pt-6">
-                    <h3 className="text-15px mb-2 font-semibold sm:text-base lg:mb-3.5">
-                      Description:
-                    </h3>
-                    <p className="text-sm">
-                      {profile.description}
-                    </p>
-                  </div>
+                </div>
+                <div className="profile-profession pt-2">
+                  <span>{profile.profession}</span>
+                </div>
+                <div className="profile-skills pt-2">
+                  {profile.skills.map((skill) => (
+                    <span key={skill} className="skill-tag">{skill}</span>
+                  ))}
+                </div>
+                <span>{profile.experience} years of experience</span>
+                <div className="pt-3 xl:pt-4">
+                  <h3 className="text-15px mb-2 font-semibold sm:text-base lg:mb-3.5">
+                    Description:
+                  </h3>
+                  <p className="text-sm">
+                    {profile.description}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="mt-4 w-full rounded-md bg-yellow-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-600"
+                  onClick={handleBooking}
+                >
+                  BOOK NOW
+                </button>
+                <div className="mt-4 flex gap-2">
                   <button
                     type="button"
-                    className="mt-4 w-full rounded-md bg-yellow-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-600"
-                    onClick={handleBooking}
+                    className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
+                    onClick={handleFollow}
                   >
-                    BOOK NOW
+                    {!alreadyFollowed && <Heart size={16} className="mr-3" />}
+                    {alreadyFollowed ? 'UNFOLLOW' : 'FOLLOW'}
                   </button>
-                  <div className="mt-4 flex gap-2">
-                    {showFollowButton && (
-                      <button
-                        type="button"
-                        className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
-                        onClick={handleFollow}
-                      >
-                        {!alreadyFollowed && <Heart size={16} className="mr-3" />}
-                        {alreadyFollowed ? 'UNFOLLOW' : 'FOLLOW'}
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
-                      onClick={handleLinkedin}
-                    >
-                      <Linkedin size={16} className="mr-3" />LINKEDIN
-                    </button>
-
-                    <button
-                      type="button"
-                      className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
-                     onClick={handleReview} >
-                      <MdOutlineReviews size={20} style={{marginRight:'10px'}}/>
-                      REVIEWS
-                    </button>
-                  </div>
-                 
-                
-                
+                  <button
+                    type="button"
+                    className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
+                    onClick={handleLinkedin}
+                  >
+                    <Linkedin size={16} className="mr-3" />LINKEDIN
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80"
+                    onClick={handleReview}
+                  >
+                    <MdOutlineReviews size={20} style={{ marginRight: '10px' }} />
+                    REVIEWS
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    );
-    
+    </div>
+  );
 }
 
 export default ProfileCard;

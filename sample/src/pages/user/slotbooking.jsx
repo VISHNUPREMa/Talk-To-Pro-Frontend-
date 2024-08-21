@@ -184,13 +184,15 @@ const Booking = () => {
                   className={`p-3 rounded ${
                     selectedTimeSlot === slot
                       ? 'bg-green-500 text-white'
-                      : getStatusForTimeSlot(slot) === 'Pending'
+                      : getStatusForTimeSlot(slot) === 'Pending' 
                       ? 'bg-white border border-gray-400 text-gray-700'
                       : getStatusForTimeSlot(slot) === 'Booked'
                       ? 'bg-red-500 border border-gray-400 text-white'
+                      : getStatusForTimeSlot(slot) === 'Cancelled'
+                      ? 'bg-white border border-gray-400 text-gray-700'
                       : 'bg-gray-200 text-gray-700'
                   }`}
-                  onClick={() => getStatusForTimeSlot(slot) === 'Pending' && toggleSelectedTimeSlot(slot)}
+                  onClick={() => (getStatusForTimeSlot(slot) === 'Pending' ||getStatusForTimeSlot(slot) === 'Cancelled' )  && toggleSelectedTimeSlot(slot)}
                 >
                   {slot}
                 </button>
