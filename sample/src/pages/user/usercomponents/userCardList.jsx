@@ -6,20 +6,23 @@ import SearchContext from '../context/searchContext';
 import { useNavigate } from 'react-router-dom';
 import '../../../style/usercards.css';
 
-export function CardList({ showMore = true }) { // Add showMore prop with default value
-  const [profiles, setProfiles] = useState([]);
-  const [sortProfile,setSortProfile] = useState([])
-  const { searchTerm ,ratingFilter } = useContext(SearchContext);
+export function CardList({ showMore = true }) {
+ 
+  const { searchTerm, ratingFilter } = useContext(SearchContext);
   const navigate = useNavigate();
+  const [profiles, setProfiles] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [limit] = useState(8); 
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(`${BACKEND_SERVER}/cards`);
+        const response = await axios.post(`${BACKEND_SERVER}/cards`, { page, limit });
         if (response.data) {
-          console.log(response.data.data);
-          
-          setProfiles(response.data.data);
+          const {allProData,totalCount} = response.data.data
+          setProfiles(allProData);
+          setTotalCount(totalCount);
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -27,42 +30,29 @@ export function CardList({ showMore = true }) { // Add showMore prop with defaul
     }
 
     fetchData();
-  }, []);
- 
+  }, [page]);
+
   let filteredProfiles = profiles;
+
   if (ratingFilter !== "" && searchTerm !== "") {
- 
     filteredProfiles = profiles.filter(profile => {
       const reviews = profile.reviews;
       const avgRating = reviews.reduce((sum, rating) => sum + rating, 0) / reviews.length;
-      
-     
       const ratingMatches = avgRating >= parseInt(ratingFilter);
-  
-      // Check if the profession includes the searchTerm
-      const searchTermMatches = (profile.profession.toLowerCase().includes(searchTerm.toLowerCase())) ;
-      
+      const searchTermMatches = profile.profession.toLowerCase().includes(searchTerm.toLowerCase());
       return ratingMatches && searchTermMatches;
     });
   } else if (ratingFilter !== "") {
-    // Filter by rating only
     filteredProfiles = profiles.filter(profile => {
       const reviews = profile.reviews;
       const avgRating = reviews.reduce((sum, rating) => sum + rating, 0) / reviews.length;
-      
       return avgRating >= parseInt(ratingFilter);
     });
   } else if (searchTerm !== "") {
-    // Filter by search term only
     filteredProfiles = profiles.filter(profile =>
       profile.profession.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
-  
-  
-
-   
- 
 
   const handleSearchPage = async (e) => {
     e.preventDefault();
@@ -73,17 +63,38 @@ export function CardList({ showMore = true }) { // Add showMore prop with defaul
     }
   };
 
+  const totalPages = Math.ceil(totalCount / limit);
+
   return (
     <>
       <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
         {filteredProfiles.length > 0 ? (
-          filteredProfiles.slice(0,8).map((profile) => (
+          (showMore ? filteredProfiles : filteredProfiles.slice(0, 8)).map((profile) => (
             <CardOne key={profile._id} profile={profile} />
           ))
         ) : (
           <p>No mentors found matching your search criteria.</p>
         )}
       </div>
+
+      {!showMore && (
+        <div className="pagination-card">
+          <button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+          <span> {page} </span>
+          <button
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={page === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
       {showMore && (
         <div className="wrapper" onClick={handleSearchPage}>
           <div className="link_wrapper">
